@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert-box mb-4">
+            <ul class="flashes list-group">
+                {% for category, message in messages %}
+                    <li class="flash list-group-item list-group-item-{{ category }} d-flex justify-content-between align-items-center">
+                        {{ message }}
+                        <button class="btn-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Hero Section with Call to Action -->
+    <section class="hero-section text-center py-5">
+        <div class="container">
+            <h1 class="display-4 mb-4">Empowering Education for All</h1>
+            <p class="lead mb-4">
+                Unlock opportunities for students through financial aid and make a lasting impact with your contribution. Join a community dedicated to advancing education.
+            </p>
+
+            <div class="button-container d-grid gap-2 d-md-flex justify-content-center">
+                <a href="{{ url_for('donation.donate') }}" class="btn custom-btn custom-btn-primary shadow me-md-3 mb-2">
+                    <i class="fas fa-donate"></i> Donate Now
+                </a>
+                <a href="{{ url_for('application.application') }}" class="btn custom-btn custom-btn-secondary shadow mb-2">
+                    <i class="fas fa-hand-holding-usd"></i> Apply for Aid
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section text-center mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="feature-card shadow-sm p-4">
+                        <i class="fas fa-university fa-3x mb-3"></i>
+                        <h5>Support Education</h5>
+                        <p>Provide scholarships and financial aid to deserving students.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card shadow-sm p-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5>Community Impact</h5>
+                        <p>Be part of a community that empowers future leaders.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="feature-card shadow-sm p-4">
+                        <i class="fas fa-hands-helping fa-3x mb-3"></i>
+                        <h5>Change a Life</h5>
+                        <p>Your donation has the power to change a student's future.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials or Trust Section -->
+    <section class="testimonials-section bg-light py-5">
+        <div class="container text-center">
+            <h3 class="mb-4">Trusted by Donors and Students Alike</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <blockquote class="blockquote text-center">
+                        <p>"Thanks to this platform, I was able to pursue my education without financial burdens."</p>
+                        <footer class="blockquote-footer">Jane Doe, Student</footer>
+                    </blockquote>
+                </div>
+                <div class="col-md-6">
+                    <blockquote class="blockquote text-center">
+                        <p>"I trust this platform with my donations, knowing it makes a real difference."</p>
+                        <footer class="blockquote-footer">John Smith, Donor</footer>
+                    </blockquote>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    /* General Styling */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f8f9fa;
+        color: #343a40;
+    }
+
+    .hero-section {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        color: white;
+        padding: 70px 0;
+        border-radius: 15px;
+    }
+
+    .display-4 {
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .lead {
+        color: #e9ecef;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* Custom Button Styling */
+    .custom-btn {
+        font-size: 1.2rem;
+        padding: 12px 35px;
+        border-radius: 50px;
+        transition: all 0.4s ease;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .custom-btn i {
+        margin-right: 10px;
+    }
+
+    .custom-btn-primary {
+        background: linear-gradient(45deg, #28a745, #218838);
+        color: white;
+    }
+
+    .custom-btn-secondary {
+        background: linear-gradient(45deg, #6c757d, #8e9eab);
+        color: white;
+    }
+
+    .custom-btn:hover {
+        box-shadow: 0px 8px 25px rgba(0, 0, 0, 0.2);
+        transform: translateY(-5px);
+    }
+
+    /* Flash Messages */
+    .alert-box {
+        position: relative;
+    }
+
+    .flash .btn-close {
+        background: none;
+        border: none;
+        color: #000;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+        background-color: white;
+        border-radius: 10px;
+        text-align: center;
+        transition: transform 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .feature-card:hover {
+        transform: scale(1.05);
+    }
+
+    .feature-card i {
+        color: #28a745;
+    }
+
+    .feature-card h5 {
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .feature-card p {
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    /* Testimonials Section */
+    .testimonials-section {
+        padding: 50px 0;
+    }
+
+    .blockquote {
+        font-size: 1.2rem;
+        font-style: italic;
+    }
+
+    .blockquote-footer {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+</style>
+
+<!-- JavaScript for Interactive Button Animation -->
+<script>
+    document.querySelectorAll('.custom-btn').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'scale(1.08)';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'scale(1)';
+        });
+    });
+</script>
+{% endblock %}

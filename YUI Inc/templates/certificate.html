@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Certificate of Donation</h1>
+<p>Your certificate is being generated. Please download it using the link below:</p>
+<a href="{{ url_for('certificate.generate_certificate', donor_id=donor_id) }}">Download Certificate</a>
+{% endblock %}

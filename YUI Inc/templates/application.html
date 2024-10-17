@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert-container">
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <h1 class="text-center mb-4">Apply to Our Program</h1>
+    <p class="text-center mb-5">Follow the steps below to complete your application</p>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="application-form" method="POST" novalidate>
+                <!-- Step 1 -->
+                <div class="step step-1 active">
+                    <h3 class="mb-4 text-center">Step 1: Personal Information</h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_number" class="form-label">ID Number</label>
+                            <input type="text" id="id_number" name="id_number" class="form-control" required minlength="13" maxlength="13" pattern="\d{13}" title="ID number should be exactly 13 digits." value="{{ request.form.id_number }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">First Name</label>
+                            <input type="text" id="name" name="name" class="form-control" required pattern="[A-Za-z]+" title="First name should only contain letters." value="{{ request.form.name }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="surname" class="form-label">Last Name</label>
+                            <input type="text" id="surname" name="surname" class="form-control" required pattern="[A-Za-z]+" title="Last name should only contain letters." value="{{ request.form.surname }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" id="email" name="email" class="form-control" required value="{{ request.form.email }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" id="password" name="password" class="form-control" required minlength="6" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}" title="Password must contain at least 6 characters, including one uppercase letter, one number, and one special character.">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="password-confirm" class="form-label">Confirm Password</label>
+                            <input type="password" id="password-confirm" name="password-confirm" class="form-control" required minlength="6">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone_number" class="form-label">Cellphone Number</label>
+                            <input type="text" id="phone_number" name="phone_number" class="form-control" required minlength="10" maxlength="10" pattern="\d{10}" title="Cellphone number should be exactly 10 digits." value="{{ request.form.phone_number }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step step-2">
+                    <h3 class="mb-4 text-center">Step 2: Additional Information</h3>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="date_of_birth" class="form-label">Date of Birth</label>
+                            <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" required value="{{ request.form.date_of_birth }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="race" class="form-label">Race</label>
+                            <select id="race" name="race" class="form-select">
+                                <option value="" selected>Select your race</option>
+                                <option value="African" {% if request.form.race == 'African' %} selected {% endif %}>African</option>
+                                <option value="White" {% if request.form.race == 'White' %} selected {% endif %}>White</option>
+                                <option value="Indian" {% if request.form.race == 'Indian' %} selected {% endif %}>Indian</option>
+                                <option value="Coloured" {% if request.form.race == 'Coloured' %} selected {% endif %}>Coloured</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="nationality" class="form-label">Nationality</label>
+                            <input type="text" id="nationality" name="nationality" class="form-control" required value="{{ request.form.nationality }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="physical_address" class="form-label">Physical Address</label>
+                            <input type="text" id="physical_address" name="physical_address" class="form-control" value="{{ request.form.physical_address }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="highest_grade" class="form-label">Highest Grade</label>
+                            <input type="text" id="highest_grade" name="highest_grade" class="form-control" value="{{ request.form.highest_grade }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="financial_status" class="form-label">Financial Status</label>
+                            <select id="financial_status" name="financial_status" class="form-select">
+                                <option value="" selected>Select your financial status</option>
+                                <option value="Employed" {% if request.form.financial_status == 'Employed' %} selected {% endif %}>Employed</option>
+                                <option value="Unemployed" {% if request.form.financial_status == 'Unemployed' %} selected {% endif %}>Unemployed</option>
+                                <option value="Student" {% if request.form.financial_status == 'Student' %} selected {% endif %}>Student</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-secondary" onclick="prevSection()">Back</button>
+                    <button type="button" class="btn btn-primary" onclick="nextSection()">Next</button>
+                    <button type="submit" class="btn btn-success">Course Selection</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function nextSection() {
+            const currentStep = document.querySelector('.step.active');
+            const nextStep = currentStep.nextElementSibling;
+            if (nextStep && nextStep.classList.contains('step')) {
+                currentStep.classList.remove('active');
+                nextStep.classList.add('active');
+            }
+        }
+
+        function prevSection() {
+            const currentStep = document.querySelector('.step.active');
+            const prevStep = currentStep.previousElementSibling;
+            if (prevStep && prevStep.classList.contains('step')) {
+                currentStep.classList.remove('active');
+                prevStep.classList.add('active');
+            }
+        }
+
+        // Form validation before proceeding to the next step
+        document.getElementById('application-form').addEventListener('submit', function (event) {
+            var form = this;
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    </script>
+
+    <style>
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        .alert-container {
+            margin-bottom: 20px;
+        }
+
+        .btn-close {
+            background-color: transparent;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .card {
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</div>
+{% endblock %}

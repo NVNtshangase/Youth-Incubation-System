@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Displaying Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="alert-box mb-4">
+            <ul class="flashes list-group">
+                {% for category, message in messages %}
+                    <li class="flash list-group-item list-group-item-{{ category }}">
+                        {{ message }}
+                        <button class="close" onclick="this.parentElement.style.display='none';">&times;</button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Header -->
+    <h1 class="text-center mb-5">Make a Donation</h1>
+
+    <!-- Profile Creation Section -->
+    <div id="profile-creation" class="card shadow-sm p-4 mb-5" {% if show_payment %} style="display: none;" {% endif %}>
+        <h2 class="mb-4">Step 1: Create Your Profile</h2>
+        <form id="profile-form" method="POST" class="needs-validation" novalidate>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_number">ID Number</label>
+                    <input type="text" name="id_number" class="form-control" required minlength="13" maxlength="13" pattern="\d{13}" title="ID number should be exactly 13 digits.">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="name">First Name</label>
+                    <input type="text" name="name" class="form-control" required pattern="[A-Za-z]+" title="First name should only contain letters.">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="surname">Last Name</label>
+                    <input type="text" name="surname" class="form-control" required pattern="[A-Za-z]+" title="Surname should only contain letters.">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="email">Email Address</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" class="form-control" required minlength="6" title="Password must contain at least 6 characters including one uppercase letter, one number, and one special character.">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="password-confirm">Confirm Password</label>
+                    <input type="password" name="password-confirm" class="form-control" required minlength="6">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <label for="cellphone">Cellphone Number</label>
+                    <input type="text" name="cellphone" class="form-control" required minlength="10" maxlength="10" pattern="\d{10}" title="Cellphone number should be exactly 10 digits.">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Create Profile and Continue to Payment</button>
+        </form>
+    </div>
+
+    <!-- Payment Information Section -->
+    <div id="payment-information" class="card shadow-sm p-4" {% if not show_payment %} style="display: none;" {% endif %}>
+        <h2 class="mb-4">Step 2: Payment Information</h2>
+        <form id="payment-form" method="POST" action="{{ url_for('donation.donate') }}">
+            <div class="form-group mb-3">
+                <label for="amount">Donation Amount</label>
+                <input type="number" name="amount" class="form-control" required min="1">
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="date">Payment Date</label>
+                <input type="date" name="date" class="form-control" required>
+            </div>
+
+            <div class="form-group mb-3">
+                <label for="method">Payment Method</label>
+                <select name="method" class="form-select" required>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="PayPal">PayPal</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-success btn-block">Submit Payment</button>
+        </form>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .alert-box {
+        position: relative;
+    }
+
+    .flash {
+        border-radius: 0.25rem;
+    }
+
+    .flash .close {
+        float: right;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+    }
+
+    .btn-block {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+</style>
+{% endblock %}
