@@ -3,7 +3,7 @@ from flask_login import UserMixin
 
 db = SQLAlchemy()
 
-# User Table 
+# User Table for Students and Donors
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     
@@ -11,7 +11,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(30), nullable=False, unique=True)
     password = db.Column(db.String(50), nullable=False)
     password_reset_token = db.Column(db.String(128), nullable=True)
-    role = db.Column(db.String(10), nullable=False) 
+    role = db.Column(db.String(10), nullable=False)  # role will distinguish between 'student' and 'donor'
 
     student = db.relationship('Student', backref='user', uselist=False)
     donor = db.relationship('Donor', backref='user', uselist=False)
@@ -104,7 +104,8 @@ class Payment(db.Model):
     payment_date = db.Column(db.Date, nullable=False)
     payment_method = db.Column(db.String(50), nullable=False)
 
-    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))
+    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))  # FK to Donor
+
 
 # Certificate Table
 class Certificate(db.Model):
@@ -116,4 +117,4 @@ class Certificate(db.Model):
     certificate_message = db.Column(db.String(255), nullable=True)
     certificate_signature = db.Column(db.String(100), nullable=False)
 
-    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))
+    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))  # FK to Donor
