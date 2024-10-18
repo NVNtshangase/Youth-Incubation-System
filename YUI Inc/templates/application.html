@@ -16,6 +16,8 @@
     {% endwith %}
 
     <h1 class="text-center mb-4">Apply to Our Program</h1>
+    <h1 class="text-center mb-4">Apply for {{ course.course_name }}</h1>
+
     <p class="text-center mb-5">Follow the steps below to complete your application</p>
 
     <div class="card">
@@ -101,7 +103,7 @@
                 <div class="d-flex justify-content-between mt-4">
                     <button type="button" class="btn btn-secondary" onclick="prevSection()">Back</button>
                     <button type="button" class="btn btn-primary" onclick="nextSection()">Next</button>
-                    <button type="submit" class="btn btn-success">Course Selection</button>
+                    <button type="submit" class="btn btn-success">Submit Application</button>
                 </div>
             </form>
         </div>

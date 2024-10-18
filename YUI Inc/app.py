@@ -38,6 +38,10 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.route('/explore')
+def explore():
+    return render_template('explore.html')
+
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -49,7 +53,7 @@ def login():
         if user and check_password_hash(user.password, password):  # Check password
             login_user(user)  # Log the user in
             flash('Login successful!', 'success')
-            #seed_courses()
+            seed_courses()
             return redirect(url_for('home'))  # Redirect to the home page
         else:
             flash('Login failed. Check your email and/or password.', 'danger')

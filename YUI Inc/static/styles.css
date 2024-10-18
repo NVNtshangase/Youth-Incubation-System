@@ -10,11 +10,37 @@ body {
     background-color: #f9f9f9; /* Optional: Light background color */
     }
     
+    .navbar-brand {
+        font-weight: 600; /* Bold */
+        font-size: 1.5rem; /* Adjust size as needed */
+        font-family: Poppins;
+    }
+
+
 footer {
-    background-color: #343a40;
-    color: white;
-    padding: 10px 0;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
+    background-color: #f8f9fa; /* Light background */
+    padding: 40px 0; /* Padding */
+    margin-top: 20px; /* Space from content */
+    font-family: Poppins;
 }
+
+.footer-logo {
+    width: 60px; /* Adjust logo size */
+    margin-bottom: 10px;
+}
+
+.social-icons a {
+    margin: 0 10px;
+    color: #343a40; /* Dark color */
+    font-size: 1.5rem; /* Adjust icon size */
+}
+
+.social-icons a:hover {
+    color: #007bff; /* Highlight color */
+}
+#scene-container {
+    width: 100%;
+    height: 80vh; /* Adjust height as necessary */
+    margin-top: 20px;
+}
+

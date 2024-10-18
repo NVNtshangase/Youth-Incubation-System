@@ -1,7 +1,159 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>About Us</h1>
-<p>Our mission is to empower students through financial aid and educational opportunities.</p>
-<p>We connect students with donors to help them achieve their educational goals.</p>
+<div class="container mt-5">
+    <section class="about-section text-center py-5">
+        <h1 class="display-4 mb-4">About Us</h1>
+        <p class="lead mb-5">
+            We are dedicated to transforming lives by providing financial aid and educational opportunities to students. Our mission is to connect generous donors with bright, deserving students, helping them achieve their dreams and become future leaders.
+        </p>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section text-center py-5 bg-light">
+        <div class="container">
+            <div class="row align-items-center">
+                <video class="img-fluid rounded shadow" autoplay muted loop playsinline>
+                    <source src="{{ url_for('static', filename='videos/book.mp4') }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>                
+
+                <div class="col-md-6">
+                    <h3 class="mb-4">Our Mission</h3>
+                    <p class="lead">
+                        Our mission is to empower students by providing financial support, enabling them to focus on their studies without the stress of financial burdens. We believe that education is a right, not a privilege, and every student deserves the chance to succeed.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Values Section -->
+    <section class="values-section text-center py-5">
+        <div class="container">
+            <h3 class="mb-4">Our Core Values</h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="value-card p-4 shadow-sm">
+                        <i class="fas fa-heart fa-3x mb-3"></i>
+                        <h5>Integrity</h5>
+                        <p>We ensure that every donation is used responsibly and transparently to support students in need.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="value-card p-4 shadow-sm">
+                        <i class="fas fa-lightbulb fa-3x mb-3"></i>
+                        <h5>Innovation</h5>
+                        <p>We continually explore new ways to improve access to education through creative solutions and partnerships.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="value-card p-4 shadow-sm">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5>Community</h5>
+                        <p>We foster a strong community that connects students and donors to create lasting impact.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Our Impact Section -->
+    <section class="impact-section bg-light py-5">
+        <div class="container text-center">
+            <h3 class="mb-4">Our Impact</h3>
+            <p class="lead mb-5">
+                Over the years, we’ve helped hundreds of students access education, with a commitment to transparency and real results.
+            </p>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="impact-stat p-4 shadow-sm">
+                        <h2 class="display-5">500+</h2>
+                        <p>Students Supported</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="impact-stat p-4 shadow-sm">
+                        <h2 class="display-5">$1M+</h2>
+                        <p>Funds Raised</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="impact-stat p-4 shadow-sm">
+                        <h2 class="display-5">100+</h2>
+                        <p>Donors Engaged</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Get Involved Section -->
+    <section class="get-involved-section text-center py-5">
+        <div class="container">
+            <h3 class="mb-4">Get Involved</h3>
+            <p class="lead mb-5">
+                Whether you're a donor looking to make a difference or a student seeking financial aid, we invite you to join us in empowering the next generation.
+            </p>
+            <div class="button-container d-grid gap-2 d-md-flex justify-content-center">
+                <a href="{{ url_for('donation.donate') }}" class="btn custom-btn custom-btn-primary shadow me-md-3 mb-2">
+                    <i class="fas fa-donate"></i> Donate Now
+                </a>
+                <a href="{{ url_for('application.course_view') }}" class="btn custom-btn custom-btn-secondary shadow mb-2">
+                    <i class="fas fa-hand-holding-usd"></i> Apply for Aid
+                </a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Custom Styles for About Page -->
+<style>
+    .about-section, .mission-section, .values-section, .impact-section, .get-involved-section {
+        color: #343a40;
+    }
+
+    .mission-section img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+
+    .value-card, .impact-stat {
+        background-color: white;
+        border-radius: 10px;
+        text-align: center;
+        transition: transform 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .value-card:hover, .impact-stat:hover {
+        transform: scale(1.05);
+    }
+
+    .value-card i, .impact-stat h2 {
+        color: #28a745;
+    }
+
+    .value-card h5 {
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .impact-stat h2 {
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
+</style>
+<style>
+    .custom-video {
+        width: 100%; /* Makes the video responsive */
+        max-width: 100%; /* Ensures the video doesn't overflow its container */
+        height: auto; /* Keeps aspect ratio */
+        border-radius: 15px; /* Creates rounded corners */
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1); /* Adds a soft shadow */
+        overflow: hidden; /* Ensures the video content doesn't overflow the rounded corners */
+    }
+</style>
+
+
 {% endblock %}

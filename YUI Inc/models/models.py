@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from flask_login import UserMixin
 
 db = SQLAlchemy()
@@ -10,11 +11,9 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False, unique=True)
     password = db.Column(db.String(50), nullable=False)
-    password_reset_token = db.Column(db.String(128), nullable=True)
-    role = db.Column(db.String(10), nullable=False)  # role will distinguish between 'student' and 'donor'
-
-    student = db.relationship('Student', backref='user', uselist=False)
-    donor = db.relationship('Donor', backref='user', uselist=False)
+    role = db.Column(db.String(10), nullable=False)
+    student = db.relationship('Student', backref='user', uselist=False, cascade='all, delete-orphan', lazy='joined')
+    donor = db.relationship('Donor', backref='user', uselist=False, cascade='all, delete-orphan', lazy='joined')
 
 
 # Student Table
@@ -40,8 +39,8 @@ class Student(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Foreign key to User
 
     # Relationship
-    financial_aid = db.relationship('FinancialAid', backref='student')
-    courses = db.relationship('Course', secondary='take', back_populates='students')
+    financial_aid = db.relationship('FinancialAid', backref='student', cascade='all, delete-orphan', lazy='joined')
+    courses = db.relationship('Course', secondary='take', back_populates='students', lazy='dynamic')
 
 
 # Donor Table
@@ -59,8 +58,8 @@ class Donor(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Foreign key to User
 
     # Relationships
-    payments = db.relationship('Payment', backref='donor')
-    certificates = db.relationship('Certificate', backref='donor')
+    payments = db.relationship('Payment', backref='donor', cascade='all, delete-orphan', lazy='joined')
+    certificates = db.relationship('Certificate', backref='donor', cascade='all, delete-orphan', lazy='joined')
 
 
 # Financial Aid Table
@@ -68,9 +67,9 @@ class FinancialAid(db.Model):
     __tablename__ = 'financial_aid'
 
     student_code = db.Column(db.Integer, db.ForeignKey('student.student_code'), primary_key=True)
-    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'), primary_key=True)
+    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'), nullable=True)
     application_status = db.Column(db.String(20), nullable=False)
-    application_date = db.Column(db.Date, nullable=False)
+    application_date = db.Column(db.DateTime, default=func.now(), nullable=False)
 
 
 # Course Table
@@ -84,7 +83,7 @@ class Course(db.Model):
     course_cost = db.Column(db.Float, nullable=False)
     
     # Relationship for students taking courses
-    students = db.relationship('Student', secondary='take', back_populates='courses')
+    students = db.relationship('Student', secondary='take', back_populates='courses', lazy='dynamic')
 
 
 # Association Table between Student and Course
