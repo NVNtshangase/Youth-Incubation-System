@@ -33,7 +33,6 @@ def generate_certificate(donor_id):
     pdf.ln(20)  # Line break
     pdf.cell(0, 10, "has made a generous donation.", ln=True, align='C')
     
-    # Add more details as needed
     pdf.ln(10)  # Line break
     pdf.cell(0, 10, "Thank you for your support!", ln=True, align='C')
     

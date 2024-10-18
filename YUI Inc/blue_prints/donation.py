@@ -117,13 +117,13 @@ def donate():
             db.session.add(new_donor)
             db.session.commit()
 
-            session['donor_id'] = new_donor.donor_code  # Store donor_code in session
+            session['donor_id'] = new_donor.donor_code 
             flash('Profile created successfully', 'success')
 
             # Render the same page with a flag to show the payment section
             return render_template('donation.html', show_payment=True)
 
-#PAYMENT
+#PAYMENT------------------------------------------------------------------------------------------------------
         elif 'amount' in request.form:  # Payment submission step
             amount = request.form['amount']
             if float(amount) < 0:
