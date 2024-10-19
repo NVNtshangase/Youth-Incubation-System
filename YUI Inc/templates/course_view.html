@@ -14,7 +14,6 @@
                 <p class="card-text">{{ course.course_description }}</p>
                 <p class="card-text"><strong>Duration:</strong> {{ course.course_duration }}</p>
                 <p class="card-text"><strong>Cost:</strong> R{{ course.course_cost }}</p>
-                <p class="card-text"><strong>Cost:</strong> R{{ course.course_cost }}</p>
                 <a href="{{ url_for('application.application', course_id=course.course_id) }}" class="btn custom-btn">Enroll</a>
                 
             </div>
