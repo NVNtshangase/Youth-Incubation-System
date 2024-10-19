@@ -73,8 +73,8 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" required value="{{ request.form.date_of_birth }}" max="{{ (current_date - timedelta(days=15*365)).strftime('%Y-%m-%d') }}">
-                                <div class="invalid-feedback">You must be at least 15 years old.</div>
+                                <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" required value="{{ request.form.date_of_birth }}">
+                            
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="race" class="form-label">Race</label>

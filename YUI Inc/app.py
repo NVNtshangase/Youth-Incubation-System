@@ -1,10 +1,11 @@
-from flask import Flask, jsonify, render_template, redirect, url_for, flash, session,request
-from models.models import FinancialAid, User,Course,Donor,Student, db
-from flask_login import LoginManager, current_user, login_user, login_required, logout_user
+from flask import Flask, render_template, redirect, session, url_for, flash, request
+from models.models import Donor, FinancialAid, Student, User,Course, db
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from blue_prints.donation import donation_bp
 from blue_prints.application import application_bp
 from blue_prints.certificate import certificate_bp
 from werkzeug.security import check_password_hash 
+from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  
@@ -39,6 +40,82 @@ def about():
 def explore():
     return render_template('explore.html')
 
+@app.route('/update_profile', methods=['GET', 'POST'])
+def update_profile():
+    student = Student.query.filter_by(student_email=current_user.username).first()
+    donor = Donor.query.filter_by(donor_email=current_user.username).first()
+    
+    if student is None and donor is None:
+        flash('Profile not found. Please log in again.', 'danger')
+        return redirect(url_for('login'))  # Redirect to login or another appropriate page
+
+    # If the user is a student, use the student profile. If they're a donor, use the donor profile.
+    user_profile = student if student else donor
+
+    if request.method == 'POST':
+        name = request.form.get('first_name')
+        surname = request.form.get('last_name')
+        email = request.form.get('email')
+        phone = request.form.get('phone_number')
+
+        # Update profile based on the user type
+        if student:
+            student.student_name = name
+            student.student_surname = surname
+            student.student_email = email
+            student.student_phone_number = phone
+            
+            # Check if email has changed
+            if email != current_user.username:
+                # Update the username in the User table
+                user = User.query.filter_by(username=current_user.username).first()
+                user.username = email
+                current_user.username = email  # Update current_user's username
+
+        elif donor:
+            donor.donor_name = name
+            donor.donor_surname = surname
+            donor.donor_email = email
+            donor.donor_phone_number = phone
+            
+            # Check if email has changed
+            if email != current_user.username:
+                # Update the username in the User table
+                user = User.query.filter_by(username=current_user.username).first()
+                user.username = email
+                current_user.username = email  # Update current_user's username
+
+        db.session.commit()
+        flash('Profile updated successfully.', 'success')
+        return redirect(url_for('dashboard'))
+
+    return render_template('update_profile.html', user_profile=user_profile)
+
+@app.route('/update_password', methods=['GET', 'POST'])
+def update_password():
+    student = Student.query.filter_by(student_email=current_user.username).first()
+    user = User.query.filter_by(username=current_user.username).first()
+    print(student)
+    if request.method == 'POST':
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        confirm_new_password = request.form.get('confirm_new_password')
+
+        if not check_password_hash(current_user.password, old_password):
+            flash('Incorrect password. Try Again.', 'danger')
+            return redirect(url_for('update_profile', student=student))
+        if new_password != confirm_new_password:
+            flash('New password does not match.', 'danger')
+            return redirect(url_for('update_profile', student=student))
+        
+        user.password = generate_password_hash(new_password)
+
+        db.session.commit()
+        flash('Password updated successfully.', 'success')
+        return redirect(url_for('home'))
+
+    return render_template('update_profile.html', student=student)
+
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -53,7 +130,7 @@ def login():
             login_user(user) 
             session['user_id'] = user.id  
             flash('Login successful!', 'success')
-            #seed_courses()
+            seed_courses()
             return redirect(url_for('home'))  
         else:
             flash('Login failed. Check your email and/or password.', 'danger')
@@ -126,32 +203,6 @@ def seed_courses():
     # Commit the session to save the courses in the database
     db.session.commit()
 
-# Profile
-@app.route('/profile')
-@login_required
-def profile():
-    try:
-        # Ensure the role is available and check the user role
-        if current_user.role == 'student':
-            profile = Student.query.filter_by(user_id=current_user.id).first()  # Corrected to match user_id
-        elif current_user.role == 'donor':
-            profile = Donor.query.filter_by(user_id=current_user.id).first()  # Corrected to match user_id
-        else:
-            flash('You do not have access to this page.', 'warning')
-            return redirect(url_for('home'))
-
-        # Handle missing profile cases
-        if profile is None:
-            flash('Profile not found. Please complete your profile first.', 'warning')
-            return redirect(url_for('home'))
-
-        # Render the profile template with appropriate data
-        return render_template('profile.html', profile=profile, role=current_user.role)
-
-    except Exception as e:
-        # Handle any errors that occur
-        flash(f"An error occurred while fetching your profile: {str(e)}", "danger")
-        return redirect(url_for('home'))
     
 @app.route('/delete_account', methods=['POST'])
 @login_required
