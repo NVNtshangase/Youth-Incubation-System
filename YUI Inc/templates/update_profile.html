@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+<div class="container my-2">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <h4>Settings</h4>
+                    <ul class="nav nav-tabs" id="settingsTabs">
+                        <li class="nav-item" onclick="gotoProfile()">
+                            <a class="text-decoration-none nav-link active" id="profileTab" href="#">Profile</a>
+                        </li>
+                        <li class="nav-item" onclick="gotoSecurity()">
+                            <a class="text-decoration-none nav-link" id="securityTab" href="#">Security</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body" id="sharedCard">
+                    <form method="POST" action="/update_profile" id="profileForm">
+                        <input type="hidden" name="csrf_token" value="your-csrf-token">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" required id="first_name" class="form-control" name="first_name" value="{{ student.student_name }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" required id="last_name" class="form-control" name="last_name" value="{{ student.student_surname }}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" required id="email" class="form-control" name="email" value="{{ student.student_email }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="phone_number" class="form-label">Phone Number</label>
+                            <input type="text" required id="phone_number" class="form-control" name="phone_number" value="{{ student.student_phone_number }}">
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary">Update Profile</button>
+                        </div>
+                    </form>
+                    <form method="POST" action="/update_password" id="securityForm" style="display: none;">
+                        <input type="hidden" name="csrf_token" value="your-csrf-token">
+                        <div class="form-group">
+                            <label for="old_password" class="form-label">Old Password</label>
+                            <input type="password" required id="old_password" class="form-control" name="old_password">
+                        </div>
+                        <div class="form-group">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" required id="new_password" class="form-control" name="new_password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirm_new_password" class="form-label">Confirm New Password</label>
+                            <input type="password" required id="confirm_new_password" class="form-control" name="confirm_new_password">
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary">Update Password</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatar Section -->
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-person-circle" style="font-size: 6rem;"></i>
+                    <p style="font-size: 12px;">Set the thumbnail image. Only *.png, *.jpg and *.jpeg image files are accepted</p>
+                    <form>
+                        <input type="file" class="form-control mb-3" accept="image/*">
+                        <button type="button" class="btn btn-primary">Upload Avatar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    let sharedCard = document.getElementById('sharedCard');
+    let profileForm = document.getElementById('profileForm');
+    let securityForm = document.getElementById('securityForm');
+    let profileTab = document.getElementById('profileTab');
+    let securityTab = document.getElementById('securityTab');
+
+    function gotoProfile() {
+        securityForm.style.display = "none";
+        securityTab.classList.remove('active');
+        profileForm.style.display = "block";
+        profileTab.classList.add('active');
+
+    }
+    function gotoSecurity() {
+        profileForm.style.display = "none";
+        profileTab.classList.remove('active');
+        securityForm.style.display = "block";
+        securityTab.classList.add('active');
+    }
+</script>
+{% endblock %}

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
-from models.models import User,Course, db
+from models.models import User,Course, db, Student
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from blue_prints.donation import donation_bp
 from blue_prints.application import application_bp
@@ -41,6 +41,52 @@ def about():
 @app.route('/explore')
 def explore():
     return render_template('explore.html')
+
+@app.route('/update_profile', methods=['GET', 'POST'])
+def update_profile():
+    student = Student.query.filter_by(student_email=current_user.username).first()
+    print(student)
+    if request.method == 'POST':
+        name = request.form.get('first_name')
+        surname = request.form.get('last_name')
+        email = request.form.get('email')
+        phone = request.form.get('phone_number')
+
+        student.student_name = name
+        student.student_surname = surname
+        student.student_email = email
+        student.student_phone_number = phone
+
+        db.session.commit()
+        flash('Profile updated successfully.', 'success')
+        return redirect(url_for('home'))
+
+    return render_template('update_profile.html', student=student)
+
+@app.route('/update_password', methods=['GET', 'POST'])
+def update_password():
+    student = Student.query.filter_by(student_email=current_user.username).first()
+    user = User.query.filter_by(username=current_user.username).first()
+    print(student)
+    if request.method == 'POST':
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        confirm_new_password = request.form.get('confirm_new_password')
+
+        if not check_password_hash(current_user.password, old_password):
+            flash('Incorrect password. Try Again.', 'danger')
+            return redirect(url_for('update_profile', student=student))
+        if new_password != confirm_new_password:
+            flash('New password does not match.', 'danger')
+            return redirect(url_for('update_profile', student=student))
+        
+        user.password = generate_password_hash(new_password)
+
+        db.session.commit()
+        flash('Password updated successfully.', 'success')
+        return redirect(url_for('home'))
+
+    return render_template('update_profile.html', student=student)
 
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
