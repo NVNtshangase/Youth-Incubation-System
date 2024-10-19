@@ -1,180 +1,208 @@
 {% extends "base.html" %}
 
 {% block title %}
-    Empowerment Journey - Explore
+    Empowerment Journey - Virtual Campus & Insights
 {% endblock %}
 
 {% block content %}
-<div class="virtual-campus">
-    <h1>Empowerment Journey: A 360-Degree Virtual Campus</h1>
-    
-    <div class="scene">
-        <div class="zone application-zone">
-            <h2>Application Zone</h2>
-            <div class="visuals">
-                <img src="https://images.unsplash.com/photo-1612832370676-ecb8c1ff6882?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=300" alt="Application Zone" class="zone-image">
-                <p>Animated characters filling out applications.</p>
+<div class="container mt-5">
+    <div class="virtual-campus text-center">
+        <h1 class="mb-4 display-4 animate__animated animate__fadeInDown">Empowerment Journey: A 360-Degree Virtual Campus & Insights</h1>
+
+        <!-- Overview section with real-time reports -->
+        <div class="reports">
+            <h2 class="mb-3 animate__animated animate__fadeInLeft">Campus Engagement Insights</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Card for Student Participation -->
+                    <div class="card shadow-sm mb-4 animate__animated animate__zoomIn">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-user-graduate"></i> Student Participation over Time</h5>
+                            <canvas id="studentParticipationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <!-- Card for Workshop Completion -->
+                    <div class="card shadow-sm mb-4 animate__animated animate__zoomIn">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-chalkboard-teacher"></i> Workshop Completion Rates</h5>
+                            <canvas id="workshopCompletionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button class="info-button" onclick="showInfo('application')">Learn More</button>
         </div>
 
-        <div class="zone classroom-environment">
-            <h2>Classroom Environment</h2>
-            <div class="visuals">
-                <img src="https://images.unsplash.com/photo-1588702548214-290ca7f98d3c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=300" alt="Classroom Environment" class="zone-image">
-                <p>Advanced digital classrooms with VR headsets.</p>
+        <!-- Interactive Campus Zones -->
+        <div class="scene mt-5">
+            <div class="row text-center">
+                <!-- Application Zone -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 animate__animated animate__fadeInUp" onclick="bounceIcon(this)">
+                        <div class="card-body">
+                            <i class="fas fa-laptop-code fa-3x mb-3 icon-transition"></i>
+                            <h5 class="card-title">Application Zone</h5>
+                            <p class="card-text">Track student application data and monitor real-time submissions.</p>
+                            <button class="btn btn-primary" onclick="showInfo('application')">View Application Metrics</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Classroom Environment -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 animate__animated animate__fadeInUp" onclick="bounceIcon(this)">
+                        <div class="card-body">
+                            <i class="fas fa-book-reader fa-3x mb-3 icon-transition"></i>
+                            <h5 class="card-title">Classroom Environment</h5>
+                            <p class="card-text">View learning module progress and usage statistics in real-time.</p>
+                            <button class="btn btn-primary" onclick="showInfo('classroom')">Explore Learning Analytics</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Development Center -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 animate__animated animate__fadeInUp" onclick="bounceIcon(this)">
+                        <div class="card-body">
+                            <i class="fas fa-tools fa-3x mb-3 icon-transition"></i>
+                            <h5 class="card-title">Skill Development Center</h5>
+                            <p class="card-text">See how students are improving their skills in real-time through workshop participation.</p>
+                            <button class="btn btn-primary" onclick="showInfo('skills')">View Workshop Stats</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button class="info-button" onclick="showInfo('classroom')">Explore Learning Modules</button>
+
+            <!-- More Zones -->
+            <div class="row text-center">
+                <!-- Honors Ceremony -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 animate__animated animate__fadeInUp" onclick="bounceIcon(this)">
+                        <div class="card-body">
+                            <i class="fas fa-award fa-3x mb-3 icon-transition"></i>
+                            <h5 class="card-title">Honors Ceremony</h5>
+                            <p class="card-text">Analyze student achievements and honors data with dynamic charts.</p>
+                            <button class="btn btn-primary" onclick="showInfo('ceremony')">Track Achievements</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Donor Appreciation Wall -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 animate__animated animate__fadeInUp" onclick="bounceIcon(this)">
+                        <div class="card-body">
+                            <i class="fas fa-hand-holding-heart fa-3x mb-3 icon-transition"></i>
+                            <h5 class="card-title">Donor Appreciation Wall</h5>
+                            <p class="card-text">Visualize donation impact with interactive charts.</p>
+                            <button class="btn btn-primary" onclick="showInfo('donors')">View Donor Contributions</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Technology Workspace -->
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm h-100 animate__animated animate__fadeInUp" onclick="bounceIcon(this)">
+                        <div class="card-body">
+                            <i class="fas fa-network-wired fa-3x mb-3 icon-transition"></i>
+                            <h5 class="card-title">Interactive Technology Workspace</h5>
+                            <p class="card-text">See how technology is integrated into learning.</p>
+                            <button class="btn btn-primary" onclick="showInfo('technology')">Explore Tech Usage</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="zone skill-development-center">
-            <h2>Skill Development Center</h2>
-            <div class="visuals">
-                <img src="https://images.unsplash.com/photo-1587001503847-224b04d29a1b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=300" alt="Skill Development Center" class="zone-image">
-                <p>Workshops in coding, arts, and entrepreneurship.</p>
-            </div>
-            <button class="info-button" onclick="showInfo('skills')">Watch Workshop Clips</button>
+        <!-- Emotional connection section -->
+        <div class="card shadow-sm mt-5 text-center p-4 animate__animated animate__bounceIn">
+            <h2><i class="fas fa-heart"></i> Emotional Connection</h2>
+            <p>Meet our animated characters sharing their testimonials about the impact of donations.</p>
+            <button class="btn btn-success" onclick="showTestimonials()">Hear Their Stories</button>
         </div>
 
-        <div class="zone honors-ceremony">
-            <h2>Honors Ceremony</h2>
-            <div class="visuals">
-                <img src="https://images.unsplash.com/photo-1562612002-9b705048e140?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=300" alt="Honors Ceremony" class="zone-image">
-                <p>Students celebrated for their achievements.</p>
-            </div>
-            <button class="info-button" onclick="showInfo('ceremony')">View Certificates</button>
+        <!-- Guided journey section -->
+        <div class="card shadow-sm mt-5 text-center p-4 animate__animated animate__bounceIn">
+            <h2><i class="fas fa-route"></i> Guided Journey</h2>
+            <p>Follow our animated guide through the campus and see live statistics.</p>
+            <button class="btn btn-warning" onclick="startGuidedTour()">Start Tour</button>
         </div>
-
-        <div class="zone donor-appreciation-wall">
-            <h2>Donor Appreciation Wall</h2>
-            <div class="visuals">
-                <img src="https://images.unsplash.com/photo-1603221058687-05531a879cf3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=300" alt="Donor Appreciation Wall" class="zone-image">
-                <p>Mural of generous donors and their impacts.</p>
-            </div>
-            <button class="info-button" onclick="showInfo('donors')">Meet Our Donors</button>
-        </div>
-
-        <div class="zone interactive-tech-workspace">
-            <h2>Interactive Technology Workspace</h2>
-            <div class="visuals">
-                <img src="https://images.unsplash.com/photo-1547030901-7ed2c5d5d083?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&q=80&w=300" alt="Interactive Technology Workspace" class="zone-image">
-                <p>Cutting-edge technology aiding learning.</p>
-            </div>
-            <button class="info-button" onclick="showInfo('technology')">Explore Tech Tools</button>
-        </div>
-    </div>
-
-    <div class="emotional-connection">
-        <h2>Emotional Connection</h2>
-        <p>Meet our animated characters sharing their testimonials about the impact of donations.</p>
-        <button onclick="showTestimonials()">Hear Their Stories</button>
-    </div>
-
-    <div class="guided-journey">
-        <h2>Guided Journey</h2>
-        <p>Follow our animated guide through the campus.</p>
-        <button onclick="startGuidedTour()">Start Tour</button>
     </div>
 </div>
 
+<!-- Adding Font Awesome for Icons -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function showInfo(zone) {
         let infoMessage = "";
         switch (zone) {
             case 'application':
-                infoMessage = "In the Application Zone, students can fill out applications and get guidance.";
+                infoMessage = "In the Application Zone, track how many students have applied and get real-time insights.";
                 break;
             case 'classroom':
-                infoMessage = "The Classroom Environment offers advanced learning tools, including VR headsets for immersive experiences.";
+                infoMessage = "View learning module progress and see how students are engaging with course materials.";
                 break;
             case 'skills':
-                infoMessage = "At the Skill Development Center, workshops help students build essential skills in various fields.";
+                infoMessage = "The Skill Development Center provides data on workshop participation and skill improvement rates.";
                 break;
             case 'ceremony':
-                infoMessage = "The Honors Ceremony celebrates student achievements and the impact of education.";
+                infoMessage = "Celebrate student achievements and view real-time stats on honors received.";
                 break;
             case 'donors':
-                infoMessage = "Meet our generous donors who make this journey possible!";
+                infoMessage = "Meet our generous donors and see how their contributions have impacted the campus.";
                 break;
             case 'technology':
-                infoMessage = "Explore the latest tech tools that enhance learning and student engagement.";
+                infoMessage = "Explore how technology is used within the campus and how students benefit from it.";
                 break;
-            default:
-                infoMessage = "More information is available.";
         }
         alert(infoMessage);
     }
 
     function showTestimonials() {
-        alert("Testimonials will be displayed here.");
-        // Implement functionality to show testimonials dynamically
+        alert("Hear stories from those whose lives have been transformed by your donations.");
     }
 
     function startGuidedTour() {
-        alert("Guided tour will start now.");
-        // Implement functionality to start a guided tour through the 3D environment
+        alert("Starting a guided tour of the virtual campus with live statistics!");
     }
+
+    // Icon animation on card click
+    function bounceIcon(card) {
+        const icon = card.querySelector('i');
+        icon.classList.add('animate__animated', 'animate__bounce');
+        setTimeout(() => {
+            icon.classList.remove('animate__animated', 'animate__bounce');
+        }, 1000);
+    }
+
+    // Example chart rendering functions
+    const ctx1 = document.getElementById('studentParticipationChart').getContext('2d');
+    const ctx2 = document.getElementById('workshopCompletionChart').getContext('2d');
+
+    const participationChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Student Participation',
+                data: [10, 25, 30, 40, 55],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2
+            }]
+        }
+    });
+
+    const completionChart = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: ['Module 1', 'Module 2', 'Module 3'],
+            datasets: [{
+                label: 'Completion Rate (%)',
+                data: [85, 60, 90],
+                backgroundColor: ['rgba(153, 102, 255, 0.6)', 'rgba(255, 159, 64, 0.6)', 'rgba(54, 162, 235, 0.6)']
+            }]
+        }
+    });
 </script>
-
-<style>
-    .virtual-campus {
-        text-align: center;
-        font-family: 'Poppins', sans-serif;
-        background-color: #f9f9f9;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    .scene {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        margin: 20px 0;
-    }
-
-    .zone {
-        background: #fff;
-        border-radius: 8px;
-        padding: 15px;
-        margin: 10px;
-        width: 300px;
-        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-        transition: transform 0.2s;
-    }
-
-    .zone:hover {
-        transform: scale(1.05);
-    }
-
-    .zone-image {
-        width: 100%;
-        border-radius: 5px;
-    }
-
-    .info-button {
-        background-color: #28a745;
-        color: #fff;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
-        transition: background-color 0.2s;
-    }
-
-    .info-button:hover {
-        background-color: #218838;
-    }
-
-    .emotional-connection, .guided-journey {
-        margin: 30px 0;
-    }
-</style>
-
 {% endblock %}

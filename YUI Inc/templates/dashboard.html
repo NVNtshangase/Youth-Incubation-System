@@ -1,168 +1,213 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid mt-5">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        {% for category, message in messages %}
-            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endfor %}
-    {% endif %}
-{% endwith %}
-    <div class="row">
-        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-            <div class="sidebar-sticky">
-                <h5 class="sidebar-title">Dashboard</h5>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="update_profile">
-                            <i class="fas fa-user"></i> Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#notifications">
-                            <i class="fas fa-bell"></i> Notifications
-                        </a>
-                    </li>
-                    {% if student %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="status">
-                            <i class="fas fa-check-circle"></i> Application Status
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#status">
-                            <i class="fas fa-chart-line"></i> Progress
-                        </a>
-                    </li>
-                    {% elif donor %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#donation-history">
-                            <i class="fas fa-receipt"></i> Donation History
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#certificates">
-                            <i class="fas fa-certificate"></i> Certificates
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#student-matches">
-                            <i class="fas fa-users"></i> Student Matches
-                        </a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="#support">
-                            <i class="fas fa-headset"></i> Support
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
 
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-            <h1 class="text-center">Welcome, {{ user.username }}!</h1>
+<!-- Main Container -->
+<div class="container-fluid">
+    <!-- Header Section -->
+    <header class="bg-primary text-white p-4 text-center">
+        <h1 class="display-4">Welcome to Your Dashboard</h1>
+        <button class="btn btn-light" onclick="refreshDashboard()">Refresh Dashboard</button>
+    </header>
 
-            <div id="profile">
-                <h2 class="mt-4">Profile</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <p>Email: {{ user.username }}</p>
-                    </div>
+    <div class="row mt-4">
+        <!-- Profile Overview -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-user-circle"></i> Profile Overview</h2>
+                    <p>Email: {{ user.username }}</p>
+                    <a href="update_profile" class="btn btn-primary">Update Profile</a>
+                    <p class="mt-3">
+                        Joined on: 
+                        {% if financial_aid %}
+                            {{ financial_aid.application_date.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            Not applicable
+                        {% endif %}
+                    </p>
+                    
                 </div>
             </div>
+        </div>
 
-            <div id="notifications" class="mt-4">
-                <h2>Notifications</h2>
-                <div class="alert alert-info">
-                    You have {{ home }} new notifications.
+        <!-- Notifications -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-bell"></i> Notifications</h2>
+                    <p>You have <strong>xxx</strong> new notifications.</p>
+                    <a href="#notifications" class="btn btn-secondary">View Notifications</a>
                 </div>
             </div>
+        </div>
 
-            {% if student %}
-            <div id="application-status" class="mt-4">
-                <h2>Application Status</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <p>Your application is currently {{ home }}.</p>
-                    </div>
+        <!-- Support Section -->
+        <div class="col-lg-4 col-md-12 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-life-ring"></i> Support</h2>
+                    <p>If you have any questions or need assistance, please contact support.</p>
+                    <button class="btn btn-primary" onclick="openChat()">Chat with Support</button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div id="progress" class="mt-4">
-                <h2>Your Progress</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <p>You have completed {{ home }}% of your courses.</p>
-                    </div>
+    <div class="row mt-4">
+        {% if student %}
+        <!-- Application Status -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-check-circle"></i> Application Status</h2>
+                    <p>Your application is currently <strong>{{ financial_aid.application_status }}</strong>.</p>
+                    <a href="status" class="btn btn-warning">Check Status</a>
                 </div>
             </div>
+        </div>
 
-            {% elif donor %}
-            <div id="donation-history" class="mt-4">
-                <h2>Donation History</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <ul class="list-unstyled">
-                            {% for donation in donor.donations %}
-                                <li>Amount: {{ donation.amount }} - Date: {{ donation.date }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+        <!-- Course Progress -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-graduation-cap"></i> Course Progress</h2>
+                    <p>You have completed <strong>XXX%</strong> of your courses.</p>
+                    <a href="#progress" class="btn btn-info">View Progress</a>
                 </div>
             </div>
+        </div>
 
-            <div id="certificates" class="mt-4">
-                <h2>Your Certificates</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <ul class="list-unstyled">
-                            {% for certificate in donor.certificates %}
-                                <li>{{ home }} - Date: {{ home }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+        <!-- Upcoming Exams -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-calendar-alt"></i> Upcoming Exams</h2>
+                    <ul class="list-unstyled">
+                        {% for exam in student.exams %}
+                            <li>XXX</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="#exam-schedule" class="btn btn-primary">View Schedule</a>
                 </div>
             </div>
+        </div>
 
-            <div id="student-matches" class="mt-4">
-                <h2>Student Matches</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <p>Here are the students matched with you for support:</p>
-                        <ul class="list-unstyled">
-                            {% for match in donor.matches %}
-                                <li>{{ home }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
+        {% elif donor %}
+        <!-- Donation History -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-history"></i> Donation History</h2>
+                    <ul class="list-unstyled">
+                        {% for donation in donor.donations %}
+                            <li>Amount: ${{ donation.amount }} - Date: {{ donation.date }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="#donation-history" class="btn btn-warning">View Donation History</a>
                 </div>
             </div>
-            {% endif %}
+        </div>
 
-            <div id="support" class="mt-4">
-                <h2>Support</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <p>If you have any questions or need assistance, please contact support.</p>
-                        <button class="btn btn-primary" onclick="openChat()">Chat with Support</button>
-                    </div>
+        <!-- Student Matches -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-users"></i> Student Matches</h2>
+                    <ul class="list-unstyled">
+                        {% for match in donor.matches %}
+                            <li>{{ match.student_name }} - {{ match.program }}</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="#student-matches" class="btn btn-info">View Matches</a>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <!-- Make a Donation -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light">
+                <div class="card-body text-center">
+                    <h2 class="card-title"><i class="fas fa-donate"></i> Make a Donation</h2>
+                    <p>Help more students by donating today.</p>
+                    <a href="donate" class="btn btn-success">Donate Now</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Dashboard Analytics Section -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow border-light">
+                <div class="card-body">
+                    <h2 class="card-title text-center"><i class="fas fa-chart-bar"></i> Dashboard Analytics</h2>
+                    <canvas id="dashboardChart"></canvas>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Include necessary JavaScript -->
+<!-- Include Chart.js for graphs -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    const ctx = document.getElementById('dashboardChart').getContext('2d');
+    const dashboardChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May'],
+            datasets: [{
+                label: 'Sample Data',
+                data: [12, 19, 3, 5, 2],
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
     function openChat() {
-        alert("Opening chat support..."); 
+        alert("Opening chat support...");
+    }
+
+    function refreshDashboard() {
+        // Logic to refresh the dashboard data
+        alert("Dashboard refreshed!");
     }
 </script>
+
+<style>
+    /* Custom styles for a modern look */
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .card {
+        border-radius: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+
 {% endblock %}

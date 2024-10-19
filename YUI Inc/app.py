@@ -130,7 +130,7 @@ def login():
             login_user(user) 
             session['user_id'] = user.id  
             flash('Login successful!', 'success')
-            seed_courses()
+            #seed_courses()
             return redirect(url_for('home'))  
         else:
             flash('Login failed. Check your email and/or password.', 'danger')
@@ -146,16 +146,20 @@ def dashboard():
     user = User.query.get(session['user_id']) 
     student = None
     donor = None
+    financial_aid = None  # Initialize financial_aid variable
 
     if user.role == 'student':
         student = Student.query.filter_by(user_id=user.id).first()
+   
+        if student:
+            financial_aid = FinancialAid.query.filter_by(student_code=student.student_code).first()  
     elif user.role == 'donor':
         donor = Donor.query.filter_by(user_id=user.id).first()
     else:
         flash("Unauthorized access.", 'danger')
         return redirect(url_for('home'))
 
-    return render_template('dashboard.html', user=user, student=student, donor=donor)
+    return render_template('dashboard.html', user=user, student=student, donor=donor, financial_aid=financial_aid)
 
 # Define a list of courses to seed into the database
 practical_skill_courses = [
