@@ -44,3 +44,42 @@ footer {
     margin-top: 20px;
 }
 
+body {
+    font-family: Arial, sans-serif;
+}
+
+.sidebar {
+    position: fixed;
+    top: 56px; /* Adjust for the navbar */
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    height: calc(100vh - 56px);
+    padding: 48px 0 0;
+}
+
+.sidebar-title {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.nav-link {
+    padding: 0.75rem 1.25rem;
+}
+
+.nav-link.active {
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+}
+
+.card-title {
+    font-size: 1.1rem;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+}

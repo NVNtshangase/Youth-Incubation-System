@@ -28,36 +28,41 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="id_number" class="form-label">ID Number</label>
-                                <input type="text" id="id_number" name="id_number" class="form-control {% if 'ID number' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required minlength="13" maxlength="13" pattern="\d{13}" title="ID number should be exactly 13 digits." value="{{ request.form.id_number }}">
+                                <input type="text" id="id_number" name="id_number" class="form-control {% if 'ID number' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required minlength="13" maxlength="13" pattern="\d{13}" title="ID number should be exactly 13 digits." placeholder="e.g., 1234567890123" value="{{ request.form.id_number }}">
                                 <div class="invalid-feedback">Please provide a valid ID number.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="name" class="form-label">First Name</label>
-                                <input type="text" id="name" name="name" class="form-control {% if 'First Name' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required pattern="[A-Za-z]+" title="First name should only contain letters." value="{{ request.form.name }}">
+                                <input type="text" id="name" name="name" class="form-control {% if 'First Name' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required pattern="[A-Za-z]+" title="First name should only contain letters." placeholder="e.g., John" value="{{ request.form.name }}">
                                 <div class="invalid-feedback">First name should only contain letters.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="surname" class="form-label">Last Name</label>
-                                <input type="text" id="surname" name="surname" class="form-control {% if 'Last Name' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required pattern="[A-Za-z]+" title="Last name should only contain letters." value="{{ request.form.surname }}">
+                                <input type="text" id="surname" name="surname" class="form-control {% if 'Last Name' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required pattern="[A-Za-z]+" title="Last name should only contain letters." placeholder="e.g., Doe" value="{{ request.form.surname }}">
                                 <div class="invalid-feedback">Last name should only contain letters.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email Address</label>
-                                <input type="email" id="email" name="email" class="form-control {% if 'Email' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required value="{{ request.form.email }}">
+                                <input type="email" id="email" name="email" class="form-control {% if 'Email' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required placeholder="e.g., john.doe@example.com" value="{{ request.form.email }}">
                                 <div class="invalid-feedback">Please provide a valid email address.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="password" class="form-label">Password</label>
-                                <input type="password" id="password" name="password" class="form-control" required minlength="6" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}" title="Password must contain at least 6 characters, including one uppercase letter, one number, and one special character.">
+                                <input type="password" id="password" name="password" class="form-control" required minlength="6" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}" title="Password must contain at least 6 characters, including one uppercase letter, one number, and one special character." placeholder="Your password">
+                                <button type="button" onclick="togglePasswordVisibility('password')">👁️</button>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="password-confirm" class="form-label">Confirm Password</label>
-                                <input type="password" id="password-confirm" name="password-confirm" class="form-control" required minlength="6">
+                                <input type="password" id="password-confirm" name="password-confirm" class="form-control" required minlength="6" placeholder="Confirm your password">
+                                <button type="button" onclick="togglePasswordVisibility('password-confirm')">👁️</button>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="phone_number" class="form-label">Cellphone Number</label>
-                                <input type="text" id="phone_number" name="phone_number" class="form-control {% if 'Cellphone Number' in request.form.get('error_fields', []) %}is-invalid{% endif %}" required minlength="10" maxlength="10" pattern="\d{10}" title="Cellphone number should be exactly 10 digits." value="{{ request.form.phone_number }}">
-                                <div class="invalid-feedback">Please provide a valid cellphone number.</div>
+                            <div class="row">
+                                <div class="col-md-6 mb-4">
+                                    <label for="cellphone">Cellphone Number</label>
+                                    <input type="tel" name="cellphone" class="form-control" required 
+                                           placeholder="Enter Cellphone Number" id="cellphone">
+                                    <input type="hidden" name="full_phone_number" id="full_phone_number"> <!-- Hidden input to store full international number -->
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -68,11 +73,12 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="date_of_birth" class="form-label">Date of Birth</label>
-                                <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" required value="{{ request.form.date_of_birth }}">
+                                <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" required value="{{ request.form.date_of_birth }}" max="{{ (current_date - timedelta(days=15*365)).strftime('%Y-%m-%d') }}">
+                                <div class="invalid-feedback">You must be at least 15 years old.</div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="race" class="form-label">Race</label>
-                                <select id="race" name="race" class="form-select">
+                                <select id="race" name="race" class="form-select" required>
                                     <option value="" selected>Select your race</option>
                                     <option value="African" {% if request.form.race == 'African' %} selected {% endif %}>African</option>
                                     <option value="White" {% if request.form.race == 'White' %} selected {% endif %}>White</option>
@@ -82,117 +88,146 @@
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="nationality" class="form-label">Nationality</label>
-                                <input type="text" id="nationality" name="nationality" class="form-control" required value="{{ request.form.nationality }}">
+                                <select id="nationality" name="nationality" class="form-select" required>
+                                    <option value="" selected>Select your nationality</option>
+                                    <!-- Add options for nationalities. You can use an API or library for a more comprehensive list -->
+                                    <option value="South Africa" {% if request.form.nationality == 'South Africa' %} selected {% endif %}>South Africa</option>
+                                    <option value="Zimbabwe" {% if request.form.nationality == 'Zimbabwe' %} selected {% endif %}>Zimbabwe</option>
+                                    <option value="Nigeria" {% if request.form.nationality == 'Nigeria' %} selected {% endif %}>Nigeria</option>
+                                    <option value="United Kingdom" {% if request.form.nationality == 'United Kingdom' %} selected {% endif %}>United Kingdom</option>
+                                    <option value="United States" {% if request.form.nationality == 'United States' %} selected {% endif %}>United States</option>
+                                    <!-- More countries can be added here -->
+                                </select>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="physical_address" class="form-label">Physical Address</label>
-                                <input type="text" id="physical_address" name="physical_address" class="form-control" value="{{ request.form.physical_address }}">
+                                <input type="text" id="physical_address" name="physical_address" class="form-control" placeholder="Enter your address" value="{{ request.form.physical_address }}">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="highest_grade" class="form-label">Highest Grade</label>
-                                <input type="text" id="highest_grade" name="highest_grade" class="form-control" value="{{ request.form.highest_grade }}">
+                                <label for="highest_grade" class="form-label">Highest Grade Completed</label>
+                                <select id="highest_grade" name="highest_grade" class="form-select" required>
+                                    <option value="" selected>Select your highest grade</option>
+                                    <option value="0" {% if request.form.highest_grade == '0' %} selected {% endif %}>0 (Not attended school)</option>
+                                    {% for grade in range(1, 13) %}
+                                        <option value="{{ grade }}" {% if request.form.highest_grade == grade %} selected {% endif %}>Grade {{ grade }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="financial_status" class="form-label">Financial Status</label>
-                                <select id="financial_status" name="financial_status" class="form-select">
-                                    <option value="" selected>Select your financial status</option>
-                                    <option value="Employed" {% if request.form.financial_status == 'Employed' %} selected {% endif %}>Employed</option>
-                                    <option value="Unemployed" {% if request.form.financial_status == 'Unemployed' %} selected {% endif %}>Unemployed</option>
-                                    <option value="Student" {% if request.form.financial_status == 'Student' %} selected {% endif %}>Student</option>
+                                <label for="financial_status" class="form-label">Family Income</label>
+                                <select id="financial_status" name="financial_status" class="form-select" required>
+                                    <option value="" selected>Select your family's financial status</option>
+                                    <option value="Below R10,000" {% if request.form.financial_status == 'Below R10,000' %} selected {% endif %}>Below R10,000</option>
+                                    <option value="R10,000 - R20,000" {% if request.form.financial_status == 'R10,000 - R20,000' %} selected {% endif %}>R10,000 - R20,000</option>
+                                    <option value="R20,000 - R30,000" {% if request.form.financial_status == 'R20,000 - R30,000' %} selected {% endif %}>R20,000 - R30,000</option>
+                                    <option value="Above R30,000" {% if request.form.financial_status == 'Above R30,000' %} selected {% endif %}>Above R30,000</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                </div>
 
                 <div class="d-flex justify-content-between mt-4">
-                    <button type="button" class="btn btn-secondary" id="back-button" onclick="prevSection()" style="display: none;">Back</button>
-                    
-                    <!-- Spacer for centering the Next button -->
-                    <div class="flex-grow-1 d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary" id="next-button" onclick="nextSection()">Next</button>
-                    </div>
-                
-                    <button type="submit" class="btn btn-success" id="submit-button" style="display: none;">Submit Application</button>
+                    <button type="button" class="btn btn-secondary" onclick="changeStep(-1)">Previous</button>
+                    <button type="button" class="btn btn-primary" onclick="changeStep(1)">Next</button>
                 </div>
-                
-                
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success" id="submit-btn" style="display: none;">Submit Application</button>
+                </div>
             </form>
         </div>
     </div>
-
-    <script>
-        function nextSection() {
-            const currentTab = document.querySelector('.tab-pane.active');
-            const nextTab = currentTab.nextElementSibling;
-    
-            if (nextTab && nextTab.classList.contains('tab-pane')) {
-                currentTab.classList.remove('show', 'active');
-                nextTab.classList.add('show', 'active');
-    
-                // Show the Back button on Step 2
-                if (nextTab.id === "step2") {
-                    document.getElementById('back-button').style.display = 'block'; // Show Back button
-                    document.getElementById('next-button').style.display = 'none'; // Hide Next button
-                    document.getElementById('submit-button').style.display = 'block'; // Show Submit button
-                }
-            }
-        }
-    
-        function prevSection() {
-            const currentTab = document.querySelector('.tab-pane.active');
-            const prevTab = currentTab.previousElementSibling;
-    
-            if (prevTab && prevTab.classList.contains('tab-pane')) {
-                currentTab.classList.remove('show', 'active');
-                prevTab.classList.add('show', 'active');
-    
-                // Show the Next button when going back to Step 1
-                if (prevTab.id === "step1") {
-                    document.getElementById('back-button').style.display = 'none'; // Hide Back button
-                    document.getElementById('next-button').style.display = 'block'; // Show Next button
-                    document.getElementById('submit-button').style.display = 'none'; // Hide Submit button
-                }
-            }
-        }
-    
-        // Form validation before proceeding to the next step
-        document.getElementById('application-form').addEventListener('submit', function (event) {
-            var form = this;
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        }, false);
-    </script>
-    
-
-    <style>
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.show {
-            display: block;
-        }
-
-        .alert-container {
-            margin-bottom: 20px;
-        }
-
-        .btn-close {
-            background-color: transparent;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        .card {
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
 </div>
+
+<script>
+    let currentStep = 0;
+    showStep(currentStep);
+
+    function showStep(step) {
+        const steps = document.querySelectorAll('.tab-pane');
+        steps.forEach((el, index) => {
+            el.classList.remove('active', 'show');
+            if (index === step) {
+                el.classList.add('active', 'show');
+            }
+        });
+        document.getElementById('submit-btn').style.display = step === steps.length - 1 ? 'block' : 'none';
+    }
+
+    function changeStep(direction) {
+        const steps = document.querySelectorAll('.tab-pane');
+        if (direction === 1 && validateStep(currentStep)) {
+            currentStep++;
+            if (currentStep >= steps.length) {
+                currentStep = steps.length - 1;
+            }
+        } else if (direction === -1) {
+            currentStep--;
+            if (currentStep < 0) {
+                currentStep = 0;
+            }
+        }
+        showStep(currentStep);
+    }
+
+    function validateStep(step) {
+        const inputs = document.querySelectorAll('.tab-pane')[step].querySelectorAll('input[required], select[required]');
+        let isValid = true;
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                isValid = false;
+                input.classList.add('is-invalid');
+                input.nextElementSibling.innerText = input.validationMessage;
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+        return isValid;
+    }
+
+    function togglePasswordVisibility(fieldId) {
+        const field = document.getElementById(fieldId);
+        field.type = field.type === 'password' ? 'text' : 'password';
+    }
+</script>
+
+
+<!-- Include the intl-tel-input CSS and JS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+<script>
+    // Initialize the phone input with country dropdown
+    var input = document.querySelector("#cellphone"); // Make sure the ID matches the input field's ID
+    var iti = window.intlTelInput(input, {
+        initialCountry: "auto",
+        geoIpLookup: function(success, failure) {
+            fetch("https://ipinfo.io/json?token=<YOUR_TOKEN_HERE>")
+                .then((resp) => resp.json())
+                .then((resp) => success(resp.country))
+                .catch(() => success("us"));
+        },
+        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+    });
+
+    // When the form is submitted, store the full phone number in the hidden input
+    document.querySelector("form").addEventListener("submit", function() {
+        // Get the full international number and store it in the hidden input
+        var fullPhoneNumber = iti.getNumber();
+        document.querySelector("#full_phone_number").value = fullPhoneNumber;
+    });
+
+    // Toggle password visibility
+    function togglePassword(inputId) {
+        const passwordInput = document.querySelector(`input[name="${inputId}"]`);
+        const eyeIcon = document.querySelector(`#eye-icon-${inputId}`);
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            eyeIcon.classList.remove("fa-eye");
+            eyeIcon.classList.add("fa-eye-slash");
+        } else {
+            passwordInput.type = "password";
+            eyeIcon.classList.remove("fa-eye-slash");
+            eyeIcon.classList.add("fa-eye");
+        }
+    }
+</script>
 {% endblock %}

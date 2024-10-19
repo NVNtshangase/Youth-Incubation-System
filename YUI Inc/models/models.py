@@ -69,7 +69,7 @@ class FinancialAid(db.Model):
     student_code = db.Column(db.Integer, db.ForeignKey('student.student_code'), primary_key=True)
     donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'), nullable=True)
     application_status = db.Column(db.String(20), nullable=False)
-    application_date = db.Column(db.DateTime, default=func.now(), nullable=False)
+    application_date = db.Column(db.DateTime, nullable=False)
 
 
 # Course Table

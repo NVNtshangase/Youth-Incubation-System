@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+                <h5 class="sidebar-title">Dashboard</h5>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="profile">
+                            <i class="fas fa-user"></i> Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#notifications">
+                            <i class="fas fa-bell"></i> Notifications
+                        </a>
+                    </li>
+                    {% if student %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="status">
+                            <i class="fas fa-check-circle"></i> Application Status
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#status">
+                            <i class="fas fa-chart-line"></i> Progress
+                        </a>
+                    </li>
+                    {% elif donor %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#donation-history">
+                            <i class="fas fa-receipt"></i> Donation History
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#certificates">
+                            <i class="fas fa-certificate"></i> Certificates
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#student-matches">
+                            <i class="fas fa-users"></i> Student Matches
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#support">
+                            <i class="fas fa-headset"></i> Support
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <h1 class="text-center">Welcome, {{ user.username }}!</h1>
+
+            <div id="profile">
+                <h2 class="mt-4">Profile</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <p>Email: {{ user.username }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notifications" class="mt-4">
+                <h2>Notifications</h2>
+                <div class="alert alert-info">
+                    You have {{ home }} new notifications.
+                </div>
+            </div>
+
+            {% if student %}
+            <div id="application-status" class="mt-4">
+                <h2>Application Status</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <p>Your application is currently {{ home }}.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="progress" class="mt-4">
+                <h2>Your Progress</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <p>You have completed {{ home }}% of your courses.</p>
+                    </div>
+                </div>
+            </div>
+
+            {% elif donor %}
+            <div id="donation-history" class="mt-4">
+                <h2>Donation History</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            {% for donation in donor.donations %}
+                                <li>Amount: {{ donation.amount }} - Date: {{ donation.date }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="certificates" class="mt-4">
+                <h2>Your Certificates</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            {% for certificate in donor.certificates %}
+                                <li>{{ home }} - Date: {{ home }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="student-matches" class="mt-4">
+                <h2>Student Matches</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <p>Here are the students matched with you for support:</p>
+                        <ul class="list-unstyled">
+                            {% for match in donor.matches %}
+                                <li>{{ home }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div id="support" class="mt-4">
+                <h2>Support</h2>
+                <div class="card">
+                    <div class="card-body">
+                        <p>If you have any questions or need assistance, please contact support.</p>
+                        <button class="btn btn-primary" onclick="openChat()">Chat with Support</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Include necessary JavaScript -->
+<script>
+    function openChat() {
+        alert("Opening chat support..."); 
+    }
+</script>
+{% endblock %}

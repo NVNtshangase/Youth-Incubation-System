@@ -38,6 +38,8 @@
                             <i class="fas fa-compass"></i> Explore
                         </a>
                     </li>
+    
+                    {% if not current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link font-weight-bold" href="{{ url_for('donation.donate') }}">
                             <i class="fas fa-donate"></i> Donate
@@ -48,7 +50,18 @@
                             <i class="fas fa-hand-holding-usd"></i> Apply
                         </a>
                     </li>
+                    {% endif %}
+    
                     {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link font-weight-bold" href="{{ url_for('dashboard') }}">
+                            {% if current_user.role == 'donor' %}
+                            <i class="fas fa-user-tie"></i> Dashboard
+                            {% else %}
+                            <i class="fas fa-user-graduate"></i> Dashboard
+                            {% endif %}
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link font-weight-bold" href="{{ url_for('logout') }}">
                             <i class="fas fa-sign-out-alt"></i> Logout
@@ -65,6 +78,7 @@
             </div>
         </div>
     </nav>
+    
 </header>
 
 
