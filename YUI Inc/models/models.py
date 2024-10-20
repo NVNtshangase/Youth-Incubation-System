@@ -65,11 +65,17 @@ class Donor(db.Model):
 # Financial Aid Table
 class FinancialAid(db.Model):
     __tablename__ = 'financial_aid'
-
-    student_code = db.Column(db.Integer, db.ForeignKey('student.student_code'), primary_key=True)
+    financial_aid = db.Column(db.Integer, primary_key=True)
+    student_code = db.Column(db.Integer, db.ForeignKey('student.student_code'),nullable=False)
     donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'), nullable=True)
     application_status = db.Column(db.String(20), nullable=False)
     application_date = db.Column(db.DateTime, nullable=False)
+
+        # Property to get courses related to this financial aid application
+    @property
+    def courses(self):
+        # Get all courses associated with the student via the Take association
+        return Course.query.join(Take).filter(Take.student_code == self.student_code).all()
 
 
 # Course Table

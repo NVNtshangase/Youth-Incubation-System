@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash
+from flask_login import current_user
 import pytz
-from models.models import User, Student, Course, FinancialAid, db
+from models.models import Take, User, Student, Course, FinancialAid, db
 from blue_prints.donation import (
     validate_email,
     validate_name,
@@ -140,11 +141,107 @@ def application(course_id):
     return render_template(
         'application.html', 
         course=course, 
-        current_date=current_date, 
-        timedelta=timedelta  
+        current_date=current_date  
     )
 
+@application_bp.route('/apply/course/<int:course_id>', methods=['POST'])
+def apply(course_id):
+    if not current_user.is_authenticated:
+        flash("You need to log in to apply for a course.", 'danger')
+        return redirect(url_for('login'))
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+    
+    if not student:
+        flash("Student profile not found.", 'danger')
+        return redirect(url_for('home'))
+
+    course = Course.query.get_or_404(course_id)
+
+    # Check if the student is already enrolled in the selected course
+    existing_enrollment = Take.query.filter_by(student_code=student.student_code, course_id=course.course_id).first()
+
+    if existing_enrollment:
+        flash("You cannot apply for this course again. Please choose a different course.", 'warning')
+        return redirect(url_for('application.course_view'))
+
+    # Check the number of current applications for the student
+    current_applications_count = Take.query.filter_by(student_code=student.student_code).count()
+
+    if current_applications_count >= 1:
+        flash("You cannot apply for more than 2 courses at the same time.", 'warning')
+        return redirect(url_for('application.course_view'))
+
+    try:
+        # Create a new entry in the 'Take' table
+        new_enrollment = Take(
+            student_code=student.student_code,
+            course_id=course.course_id
+        )
+        db.session.add(new_enrollment)
+
+        # Create a financial aid entry (if applicable)
+        sast_timezone = pytz.timezone('Africa/Johannesburg')
+        sast_time = datetime.now(sast_timezone)
+
+        new_financial_aid = FinancialAid(
+            student_code=student.student_code,
+            donor_code=None,  
+            application_status='Pending',
+            application_date=sast_time
+        )
+        
+        db.session.add(new_financial_aid)
+        db.session.commit()
+
+        flash('Application submitted successfully!', 'success')
+        return redirect(url_for('dashboard'))
+
+    except Exception as e:
+        db.session.rollback()  # Roll back the session if an error occurs
+        flash(f"Error submitting application: {e}", 'danger')
+        return redirect(url_for('application.course_view'))
+    
 @application_bp.route('/courses', methods=['GET'])
 def course_view():
-    courses = Course.query.all()  # Query all courses
+    courses = Course.query.all() 
     return render_template('course_view.html', courses=courses)
+@application_bp.route('/withdraw/<int:course_id>', methods=['POST'])
+def withdraw_application(course_id):
+    if not current_user.is_authenticated:
+        flash("You need to log in to withdraw an application.", 'danger')
+        return redirect(url_for('login'))
+
+    student = Student.query.filter_by(user_id=current_user.id).first()
+
+    if not student:
+        flash("Student profile not found.", 'danger')
+        return redirect(url_for('home'))
+
+    course = Course.query.get_or_404(course_id)
+
+    # Check if there is a financial aid application for the student and course
+    financial_aid = FinancialAid.query.filter_by(student_code=student.student_code, application_status='Pending').first()
+
+    if not financial_aid:
+        flash("No pending application found to withdraw.", 'danger')
+        return redirect(url_for('application.course_view'))
+
+    try:
+        # Optionally, remove the course enrollment if linked to the application
+        enrollment = Take.query.filter_by(student_code=student.student_code, course_id=course.course_id).first()
+
+        if enrollment:
+            db.session.delete(enrollment)
+
+        # Delete the financial aid application
+        db.session.delete(financial_aid)
+        db.session.commit()
+
+        flash('Application withdrawn successfully!', 'success')
+        return redirect(url_for('dashboard'))
+
+    except Exception as e:
+        db.session.rollback()  # Roll back the session if an error occurs
+        flash(f"Error withdrawing application: {e}", 'danger')
+        return redirect(url_for('application.course_view'))

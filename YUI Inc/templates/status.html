@@ -1,18 +1,175 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Application Status</h2>
-    <div class="card">
-        <div class="card-body">
-            {% if application_date %}
-                <p><strong>Status:</strong> {{ status }}</p>
-                <p><strong>Application Date:</strong> {{ application_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
-            {% else %}
-                <p>{{ status }}</p>
+<div class="container mt-5">
+    <h2 class="text-center mb-5">Application Status</h2>
+
+    <!-- Earliest Application Card -->
+    {% if earliest_application_details.application %}
+    <div class="status-card earliest-application" 
+         style="background-color: {{ 
+            earliest_application_details.application.application_status == 'Pending' and '#fff4e1' or 
+            earliest_application_details.application.application_status == 'In Progress' and '#e1f0ff' or 
+            earliest_application_details.application.application_status == 'Successful' and '#e1ffe1' or 
+            '#ffe1e1' 
+         }};">
+        <div class="status-content">
+            <h4>Earliest Application</h4>
+            <p><strong>Course:</strong> {{ earliest_application_details.course.course_name if earliest_application_details.course else 'N/A' }}</p>
+            <p><strong>Description:</strong> {{ earliest_application_details.course.course_description if earliest_application_details.course else 'N/A' }}</p>
+            <p><strong>Date:</strong> {{ earliest_application_details.application.application_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p><strong>Status:</strong> 
+                <span class="status-badge 
+                {% if earliest_application_details.application.application_status == 'Pending' %} pending
+                {% elif earliest_application_details.application.application_status == 'In Progress' %} in-progress
+                {% elif earliest_application_details.application.application_status == 'Successful' %} successful
+                {% else %} rejected
+                {% endif %}">
+                {{ earliest_application_details.application.application_status }}
+                </span>
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Other Applications Grid -->
+<h3 class="mt-5">Other Applications</h3>
+<div class="applications-grid">
+    {% for detail in application_details %}
+    {% if detail.application.financial_aid != earliest_application_details.application.financial_aid %}
+    <div class="status-card" 
+         style="background-color: {{ 
+            detail.application.application_status == 'Pending' and '#fff4e1' or 
+            detail.application.application_status == 'In Progress' and '#e1f0ff' or 
+            detail.application.application_status == 'Successful' and '#e1ffe1' or 
+            '#ffe1e1' 
+         }};">
+        <div class="status-content">
+            <h5>{{ detail.courses[0].course_name if detail.courses else 'N/A' }}</h5>
+            <p><strong>Description:</strong> {{ detail.courses[0].course_description if detail.courses else 'N/A' }}</p>
+            <p><strong>Date:</strong> {{ detail.application.application_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            <p><strong>Status:</strong>
+                <span class="status-badge 
+                {% if detail.application.application_status == 'Pending' %} pending
+                {% elif detail.application.application_status == 'In Progress' %} in-progress
+                {% elif detail.application.application_status == 'Successful' %} successful
+                {% else %} rejected
+                {% endif %}">
+                {{ detail.application.application_status }}
+                </span>
+            </p>
+            
+            {% if detail.application.application_status == 'Pending' %}
+            <!-- Withdraw Button -->
+            <form action="{{ url_for('application.withdraw_application', course_id=detail.courses[0].course_id) }}" method="POST">
+                <button type="submit" class="btn btn-danger mt-3">Withdraw Application</button>
+            </form>
             {% endif %}
         </div>
     </div>
-    <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">Back to Dashboard</a>
+    {% endif %}
+    {% endfor %}
 </div>
+
+
+    <div class="text-center">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-4">Back to Dashboard</a>
+    </div>
+</div>
+<style>
+    /* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container Styling */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Card Styling */
+.status-card {
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.status-card:hover {
+    transform: scale(1.05);
+}
+
+/* Application Grid Styling */
+.applications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Content Styling */
+.status-content h4, .status-content h5 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+
+.status-content p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+/* Badge Styles */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    color: white;
+}
+
+.pending {
+    background-color: #ffc107;
+}
+
+.in-progress {
+    background-color: #17a2b8;
+}
+
+.successful {
+    background-color: #28a745;
+}
+
+.rejected {
+    background-color: #dc3545;
+}
+
+/* Button Styling */
+.btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+</style>
+<script>
+    // adding tooltips for statuses
+document.addEventListener("DOMContentLoaded", function() {
+    const statusBadges = document.querySelectorAll('.status-badge');
+
+    statusBadges.forEach(badge => {
+        badge.setAttribute('title', `Status: ${badge.textContent.trim()}`);
+    });
+});
+
+</script>
 {% endblock %}

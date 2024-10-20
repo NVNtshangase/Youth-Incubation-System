@@ -2,6 +2,18 @@
 
 {% block content %}
 <div class="container mt-5">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
     <h1 class="text-center mb-4">Available Courses</h1>
 
     <input type="text" id="searchInput" class="form-control mb-4" placeholder="Search for courses..." />
@@ -14,8 +26,16 @@
                 <p class="card-text">{{ course.course_description }}</p>
                 <p class="card-text"><strong>Duration:</strong> {{ course.course_duration }}</p>
                 <p class="card-text"><strong>Cost:</strong> R{{ course.course_cost }}</p>
-                <a href="{{ url_for('application.application', course_id=course.course_id) }}" class="btn custom-btn">Enroll</a>
-                
+
+                {% if current_user.is_authenticated %}
+                    <!-- For logged-in users -->
+                    <form action="{{ url_for('application.apply', course_id=course.course_id) }}" method="POST">
+                        <button type="submit" class="btn btn-primary">Apply</button>
+                    </form>
+                {% else %}
+                    <!-- For unregistered users -->
+                    <a href="{{ url_for('application.application', course_id=course.course_id) }}" class="btn btn-success" onclick="return handleEnrollClick(this.href);">Enroll</a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -67,17 +87,24 @@
 
     /* Button Styles */
     .btn {
-        background: linear-gradient(45deg, #007bff, #00c6ff);
-        color: white;
         padding: 12px 20px;
         border-radius: 25px;
         border: none;
         transition: transform 0.2s, background 0.3s;
     }
 
+    .btn-primary {
+        background: linear-gradient(45deg, #007bff, #00c6ff);
+        color: white;
+    }
+
+    .btn-success {
+        background-color: #28a745; /* Bootstrap success color */
+        color: white;
+    }
+
     .btn:hover {
         transform: translateY(-3px); /* Lift button effect on hover */
-        background: linear-gradient(45deg, #0056b3, #0095e7); /* Darker gradient on hover */
     }
 
     /* Responsive styles */
@@ -104,5 +131,12 @@ document.getElementById('searchInput').addEventListener('keyup', function() {
         }
     });
 });
+
+function handleEnrollClick(url) {
+    // Add any additional logic you want to execute before enrolling.
+    // For example, confirmation dialog:
+    const confirmed = confirm("Are you sure you want to enroll in this course?");
+    return confirmed; // If confirmed, allow the link to proceed; otherwise, cancel the action.
+}
 </script>
 {% endblock %}

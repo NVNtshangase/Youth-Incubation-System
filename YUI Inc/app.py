@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, session, url_for, flash, request
-from models.models import Donor, FinancialAid, Student, User,Course, db
+from models.models import Donor, FinancialAid, Student, Take, User,Course, db
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from blue_prints.donation import donation_bp
 from blue_prints.application import application_bp
@@ -146,20 +146,22 @@ def dashboard():
     user = User.query.get(session['user_id']) 
     student = None
     donor = None
-    financial_aid = None  # Initialize financial_aid variable
+    total_applications = 0  # Initialize to hold the number of applications
 
     if user.role == 'student':
         student = Student.query.filter_by(user_id=user.id).first()
    
         if student:
-            financial_aid = FinancialAid.query.filter_by(student_code=student.student_code).first()  
+            # Count the number of financial aid applications for the student
+            total_applications = FinancialAid.query.filter_by(student_code=student.student_code).count()
+            
     elif user.role == 'donor':
         donor = Donor.query.filter_by(user_id=user.id).first()
     else:
         flash("Unauthorized access.", 'danger')
         return redirect(url_for('home'))
 
-    return render_template('dashboard.html', user=user, student=student, donor=donor, financial_aid=financial_aid)
+    return render_template('dashboard.html', user=user, student=student, donor=donor, total_applications=total_applications)
 
 # Define a list of courses to seed into the database
 practical_skill_courses = [
@@ -206,8 +208,7 @@ def seed_courses():
     
     # Commit the session to save the courses in the database
     db.session.commit()
-
-    
+  
 @app.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
@@ -256,28 +257,50 @@ def logout():
     flash('You have been logged out.', 'info')  
     return redirect(url_for('home'))  
 
-#App progress
 @app.route('/status', methods=['GET'])
 @login_required
 def status():
-    student_profile = Student.query.filter_by(user_id=current_user.id).first()
+    try:
+        student_profile = Student.query.filter_by(user_id=current_user.id).first()
 
-    if student_profile is None:
-        flash("You do not have a student profile associated with your account.", 'warning')
+        if student_profile is None:
+            flash("You do not have a student profile associated with your account.", 'warning')
+            return redirect(url_for('dashboard'))
+
+        # Query the earliest FinancialAid application
+        earliest_application = FinancialAid.query.filter_by(student_code=student_profile.student_code).order_by(FinancialAid.application_date.asc()).first()
+
+        # Collect course info for the earliest application
+        earliest_application_details = {}
+        if earliest_application:
+            # Get course details through the student relationship
+            student_course = Course.query.filter_by(course_id=student_profile.course_code).first() 
+            earliest_application_details = {
+                'application': earliest_application,
+                'course': student_course
+            }
+
+
+        # Query all FinancialAid applications for the student
+        applications = FinancialAid.query.filter_by(student_code=student_profile.student_code).all()
+
+        # Collect course info for each application
+        application_details = []
+        for application in applications:
+            # Use the courses property to get the courses related to this financial aid application
+            courses = application.courses  # This will use the courses property defined above
+
+            # Append the application and its corresponding courses to the details list
+            application_details.append({
+                'application': application,
+                'courses': courses  
+            })
+
+        return render_template('status.html', earliest_application_details=earliest_application_details, application_details=application_details)
+
+    except Exception as e:
+        flash(f"An error occurred while fetching your application status: {e}", 'danger')
         return redirect(url_for('dashboard'))
-
-    # Query the FinancialAid table for the current user's application status
-    application = FinancialAid.query.filter_by(student_code=student_profile.student_code).first()
-
-    if application:
-        status = application.application_status
-        application_date = application.application_date
-    else:
-        status = "No application found."
-        application_date = None
-
-    return render_template('status.html', status=status, application_date=application_date)
-
 
 if __name__ == '__main__':
     with app.app_context():
