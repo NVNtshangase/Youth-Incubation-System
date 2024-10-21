@@ -1,85 +1,105 @@
 body {
     background-color: #f8f9fa;
+    transition: background-color 0.3s ease;
 }
- main {
+
+main {
     max-height: 80vh; /* Adjust as needed */
     overflow-y: auto; /* Enable vertical scrolling */
     padding: 20px; /* Add some padding */
     border: 1px solid #ddd; /* Optional: Add a border for visual separation */
     border-radius: 5px; /* Optional: Add rounded corners */
     background-color: #f9f9f9; /* Optional: Light background color */
-    }
-    
-    .navbar-brand {
-        font-weight: 600; /* Bold */
-        font-size: 1.5rem; /* Adjust size as needed */
-        font-family: Poppins;
-    }
+    transition: background-color 0.3s ease;
+}
 
+.navbar-brand {
+    font-weight: 600; /* Bold */
+    font-size: 1.5rem; /* Adjust size as needed */
+    font-family: Poppins;
+}
+
+.nav-link {
+    position: relative;
+    color: #343a40; /* Default text color */
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #007bff; /* Change color on hover */
+}
+
+.nav-link::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 2px;
+    background: #007bff;
+    transition: width 0.3s;
+}
+
+.nav-link:hover::after {
+    width: 100%; /* Full width on hover */
+}
 
 footer {
     background-color: #f8f9fa; /* Light background */
     padding: 40px 0; /* Padding */
     margin-top: 20px; /* Space from content */
     font-family: Poppins;
+    border-top: 2px solid #007bff; /* Blue top border for distinction */
 }
 
 .footer-logo {
-    width: 60px; /* Adjust logo size */
-    margin-bottom: 10px;
+    width: 60px; /* Normal size */
+    transition: transform 0.5s ease, opacity 0.5s ease; /* Smooth transition */
+}
+
+.footer-logo.congratulations {
+    transform: scale(10); /* Scale to fit almost the whole screen */
+    opacity: 0.9; /* Slightly fade it in */
+    z-index: 999; /* Make sure it's on top */
+}
+
+.footer {
+    background-color: #f8f9fa; /* Light background */
+    padding: 40px 0; /* Padding */
+    margin-top: 20px; /* Space from content */
+    font-family: Poppins;
+    position: relative; /* For absolute positioning */
+}
+
+
+.footer-logo:hover {
+    transform: scale(1.1); /* Scale up on hover */
+    cursor: pointer; /* Show pointer on hover */
 }
 
 .social-icons a {
-    margin: 0 10px;
+    margin: 0 15px;
     color: #343a40; /* Dark color */
     font-size: 1.5rem; /* Adjust icon size */
+    transition: color 0.3s; /* Smooth color transition */
 }
 
 .social-icons a:hover {
     color: #007bff; /* Highlight color */
-}
-#scene-container {
-    width: 100%;
-    height: 80vh; /* Adjust height as necessary */
-    margin-top: 20px;
+    transform: scale(1.2); /* Scale up on hover */
 }
 
-body {
-    font-family: Arial, sans-serif;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
-.sidebar {
-    position: fixed;
-    top: 56px; /* Adjust for the navbar */
-    bottom: 0;
-    left: 0;
-    z-index: 100;
-    height: calc(100vh - 56px);
-    padding: 48px 0 0;
+h1, h2, h3 {
+    animation: fadeIn 5s ease forwards; /* Fade-in animation */
 }
 
-.sidebar-title {
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
-}
 
-.nav-link {
-    padding: 0.75rem 1.25rem;
-}
+/* Add any other custom styles you want here */
 
-.nav-link.active {
-    font-weight: bold;
-}
-
-.card {
-    border: none;
-}
-
-.card-title {
-    font-size: 1.1rem;
-}
-
-.list-group-item {
-    display: flex;
-    justify-content: space-between;
-}

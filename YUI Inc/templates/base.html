@@ -40,7 +40,7 @@
                             <i class="fas fa-compass"></i> Explore
                         </a>
                     </li>
-    
+
                     {% if not current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link font-weight-bold" href="{{ url_for('donation.donate') }}">
@@ -53,7 +53,7 @@
                         </a>
                     </li>
                     {% endif %}
-    
+
                     {% if current_user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link font-weight-bold" href="{{ url_for('dashboard') }}">
@@ -80,34 +80,53 @@
             </div>
         </div>
     </nav>
-    
 </header>
 
+<!-- Main Content Section -->
+<main class="container mt-4">
+    {% block content %}{% endblock %}
+</main>
 
-    <!-- Main Content Section -->
-    <main class="container mt-4">
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Footer Section -->
-    <footer class="text-center mt-4">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="YUI Logo" class="footer-logo">
-        <h5><strong>YUI Inc.</strong></h5>
+<!-- Footer Section -->
+<footer class="text-center mt-4 bg-light py-5">
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="YUI Logo" class="footer-logo" id="footerLogo" onclick="showCongratulations()">
+        <h5 class="mt-3"><strong>YUI Inc.</strong></h5>
         <p>Your partner in education, empowering students through financial aid and opportunities.</p>
 
-        <div class="social-icons">
+        <div class="social-icons my-3">
             <a href="https://facebook.com" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
             <a href="https://twitter.com" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
             <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
             <a href="https://instagram.com" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
         </div>
 
-        <p>&copy; {{ year }} YUI Inc. All rights reserved.</p>
-    </footer>
+        <p>&copy; 2024 YUI Inc. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    // Your existing JS...
     
-    {% block js %}{% endblock %}
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    // Function to handle double-tap effect
+    let tapTimeout;
+    const logo = document.querySelector('.footer-logo');
+
+    logo.addEventListener('dblclick', () => {
+        logo.classList.add('congratulations');
+        
+        // Remove the effect after a brief time
+        clearTimeout(tapTimeout);
+        tapTimeout = setTimeout(() => {
+            logo.classList.remove('congratulations');
+        }, 1500); // Adjust duration as needed
+    });
+</script>
+
+{% block js %}{% endblock %}
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

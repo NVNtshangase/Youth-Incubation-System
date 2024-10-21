@@ -5,16 +5,14 @@
     <!-- Displaying Flash Messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        <div class="alert-box mb-4">
-            <ul class="flashes list-group">
-                {% for category, message in messages %}
-                    <li class="flash list-group-item list-group-item-{{ category }}">
-                        {{ message }}
-                        <button class="close" onclick="this.parentElement.style.display='none';">&times;</button>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endfor %}
     {% endif %}
     {% endwith %}
 
@@ -22,8 +20,8 @@
     <h1 class="text-center mb-5">Make a Donation</h1>
 
     <!-- Profile Creation Section -->
-    <div id="profile-creation" class="card shadow-sm p-4 mb-5" {% if show_payment %} style="display: none;" {% endif %}>
-        <h2 class="mb-4">Step 1: Create Your Profile</h2>
+    <div id="profile-creation" class="card shadow-sm p-4 mb-5">
+        <h2 class="mb-4">Create Your Profile</h2>
         <form id="profile-form" method="POST" class="needs-validation" novalidate>
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -85,71 +83,24 @@
                 </div>
             </div>
 
-
             <div class="row">
-                <div class="col-md-6 mb-4">
-                    <label for="cellphone">Cellphone Number</label>
-                    <input type="tel" name="cellphone" class="form-control" required 
-                           placeholder="Enter Cellphone Number" id="cellphone">
-                    <input type="hidden" name="full_phone_number" id="full_phone_number"> <!-- Hidden input to store full international number -->
-                </div>
-            </div>
-            
-
                 <div class="col-md-6 mb-3">
                     <label for="organisation">Organisation</label>
                     <input type="text" class="form-control" id="organisation" name="organisation"
                            value="{{ donor_info.organisation or '' }}" placeholder="Enter Organisation Name">
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label for="cellphone" class="form-label">Cellphone Number</label>
+                    <div class="input-group">
+                        <input type="tel" name="cellphone" class="form-control" required placeholder="Enter Cellphone Number" id="cellphone">
+                        <input type="hidden" name="full_phone_number" id="full_phone_number">
+                    </div>
+                </div>
             </div>
-
             <button type="submit" class="btn btn-primary btn-block">Complete Profile & Pay</button>
         </form>
     </div>
 </div>
-
-
-<!-- Custom Styles -->
-<style>
-    .alert-box {
-        position: relative;
-    }
-
-    .flash {
-        border-radius: 0.25rem;
-    }
-
-    .flash .close {
-        float: right;
-        font-size: 1.2rem;
-        cursor: pointer;
-    }
-
-    .card {
-        border-radius: 0.5rem;
-    }
-
-    .btn-block {
-        display: block;
-        width: 100%;
-        padding: 0.75rem;
-    }
-
-    .shadow-sm {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-
-    .input-group {
-        position: relative;
-    }
-
-    .input-group-append {
-        position: absolute;
-        right: 0;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-</style>
 
 <!-- Include the intl-tel-input CSS and JS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css" />
@@ -190,4 +141,60 @@
         }
     }
 </script>
+
+<style>
+
+    .alert {
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        transition: opacity 0.5s ease;
+    }
+
+    .card {
+        border-radius: 0.5rem;
+        border: 1px solid #e0e0e0;
+    }
+
+    .btn-primary {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+        transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .input-group-append {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .form-control {
+        border-radius: 0.5rem;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: border-color 0.3s;
+    }
+
+    .form-control:focus {
+        border-color: #4CAF50; /* Change border color on focus */
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    }
+
+    /* Responsive design */
+    @media (max-width: 576px) {
+        .btn-block {
+            padding: 1rem;
+            font-size: 1.1rem;
+        }
+
+    }
+</style>
 {% endblock %}

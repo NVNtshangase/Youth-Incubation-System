@@ -132,11 +132,11 @@ def donate():
                 db.session.add(new_donor)
                 db.session.commit()
 
-                session['donor_id'] = new_donor.donor_code 
+                session['donor_id'] = new_donor.donor_code
                 flash('Profile created successfully', 'success')
 
-                # Render the same page with a flag to show the payment section
-                return render_template('donation.html', show_payment=True, donor_info=donor_info)
+                # Redirect to the home page after profile creation
+                return redirect(url_for('home'))
 
         except Exception as e:
             flash("An error occurred while processing your request. Please try again later.", 'error')

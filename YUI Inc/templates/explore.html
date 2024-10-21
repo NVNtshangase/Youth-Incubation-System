@@ -7,8 +7,12 @@
 {% block content %}
 <div class="container mt-5">
     <div class="virtual-campus text-center">
-        <h1 class="mb-4 display-4 animate__animated animate__fadeInDown">Empowerment Journey: A 360-Degree Virtual Campus & Insights</h1>
-
+        <div class="header-section">
+            <h1 class="display-4 animate__animated animate__fadeInDown">
+                Empowerment Journey: A 360&deg; Virtual Campus & Insights
+            </h1>
+        </div>
+        
         <!-- Overview section with real-time reports -->
         <div class="reports">
             <h2 class="mb-3 animate__animated animate__fadeInLeft">Campus Engagement Insights</h2>
@@ -130,6 +134,99 @@
     </div>
 </div>
 
+<style>
+    /* Card Hover Effects */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card:hover .card-body {
+    background-color: #f1f1f1;
+}
+
+/* Change the icon color on hover */
+.card:hover i {
+    color: #007bff;
+    transition: color 0.3s ease;
+}
+
+/* Button hover effects */
+.card .btn {
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.card .btn:hover {
+    background-color: #007bff;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Additional hover effects for buttons */
+.btn:hover {
+    background-color: #ffce44;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
+}
+.header-section {
+    position: relative;
+    padding: 40px 20px; /* Padding around the header */
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.7), rgba(0, 123, 255, 0.3));
+    color: white; /* Text color */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* Shadow effect */
+    margin: 20px; /* Margin around the section */
+    overflow: hidden; /* Hide overflow for animations */
+    transition: background 0.3s ease, transform 0.3s ease; /* Smooth transition */
+}
+
+.header-section:hover {
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.9), rgba(0, 123, 255, 0.5)); /* Darker on hover */
+    transform: scale(1.05); /* Slightly enlarge the header */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); /* Increase shadow on hover */
+}
+
+.header-section h1 {
+    font-size: 2.5rem; /* Font size for the heading */
+    animation: fadeIn 1.5s ease forwards; /* Fade-in animation */
+    transition: transform 0.3s ease; /* Smooth transition for text scaling */
+}
+
+.header-section:hover h1 {
+    transform: scale(1.1); /* Slightly enlarge text on hover */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Start position */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* End position */
+    }
+}
+
+/* Optional: Adding a subtle background movement */
+@keyframes backgroundMove {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 100% 100%;
+    }
+}
+
+.header-section {
+    animation: backgroundMove 20s linear infinite; /* Background movement */
+}
+
+</style>
+
 <!-- Adding Font Awesome for Icons -->
 <script src="https://kit.fontawesome.com/a076d05399.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -204,5 +301,24 @@
             }]
         }
     });
+    // Function to add bounce effect to icons on hover
+document.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('mouseenter', function () {
+        const icon = this.querySelector('i');
+        if (icon) {
+            icon.classList.add('animate__animated', 'animate__bounce');
+        }
+    });
+
+    card.addEventListener('mouseleave', function () {
+        const icon = this.querySelector('i');
+        if (icon) {
+            setTimeout(() => {
+                icon.classList.remove('animate__animated', 'animate__bounce');
+            }, 1000);  // Duration of bounce effect
+        }
+    });
+});
+
 </script>
 {% endblock %}

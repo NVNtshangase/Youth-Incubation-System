@@ -32,6 +32,9 @@ class Student(db.Model):
     student_physical_address = db.Column(db.String(100), nullable=True)
     student_highest_grade = db.Column(db.String(20), nullable=True)
     student_financial_status = db.Column(db.String(20), nullable=True)
+    disability = db.Column(db.String(10), nullable=True)
+    criminal_record = db.Column(db.String(10), nullable=True)
+    age = db.Column(db.Integer, nullable=False)
 
     # Foreign Key for Course
     course_code = db.Column(db.Integer, db.ForeignKey('course.course_id'))
@@ -109,7 +112,7 @@ class Payment(db.Model):
     payment_date = db.Column(db.Date, nullable=False)
     payment_method = db.Column(db.String(50), nullable=False)
 
-    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))  # FK to Donor
+    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))
 
 
 # Certificate Table
@@ -122,4 +125,4 @@ class Certificate(db.Model):
     certificate_message = db.Column(db.String(255), nullable=True)
     certificate_signature = db.Column(db.String(100), nullable=False)
 
-    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))  # FK to Donor
+    donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))

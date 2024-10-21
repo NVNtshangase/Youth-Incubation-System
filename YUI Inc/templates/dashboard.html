@@ -4,10 +4,11 @@
 <!-- Main Container -->
 <div class="container-fluid">
     <!-- Header Section -->
-    <header class="bg-primary text-white p-4 text-center">
-        <h1 class="display-4">Welcome to Your Dashboard</h1>
-        <button class="btn btn-light" onclick="refreshDashboard()">Refresh Dashboard</button>
+    <header class="dashboard-header p-4 text-center">
+        <h1 class="display-4 animate__animated animate__fadeInDown">Welcome to Your Dashboard</h1>
+        <button class="btn btn-light btn-refresh" onclick="refreshDashboard()">Refresh Dashboard</button>
     </header>
+    
 
     <!-- Flash Messages -->
     <div class="row mt-4">
@@ -190,11 +191,6 @@
 <!-- Include Chart.js for graphs -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Refresh Dashboard Button
-function refreshDashboard() {
-    location.reload(); // Reloads the current page
-}
-
 // Handle Chart Rendering using Chart.js
 const ctx = document.getElementById('dashboardChart').getContext('2d');
 const dashboardChart = new Chart(ctx, {
@@ -245,9 +241,63 @@ cards.forEach(card => {
         card.classList.remove('hovered'); // Remove the class when not hovering
     });
 });
+function refreshDashboard() {
+    const button = document.querySelector('.btn-refresh');
+    button.innerText = 'Refreshing...'; // Change button text
+    button.disabled = true; // Disable the button temporarily
+
+    // Simulate a refresh process (you can replace this with your actual logic)
+    setTimeout(() => {
+        button.innerText = 'Refresh Dashboard'; // Reset button text
+        button.disabled = false; // Enable the button again
+        // You can also add any additional logic here to actually refresh your dashboard
+    }, 2000); // Duration of the simulated refresh
+}
 
 </script>
 <style>
+    .dashboard-header {
+    background: linear-gradient(135deg, #007bff 0%, #00c5ff 100%);
+    color: white;
+    position: relative;
+    overflow: hidden; /* Ensure animations stay within the header */
+}
+
+.dashboard-header h1 {
+    animation: bounceInDown 1s ease;
+    transition: transform 0.3s;
+}
+
+.dashboard-header .btn-refresh {
+    transition: background-color 0.3s, transform 0.3s;
+    margin-top: 20px; /* Space above the button */
+}
+
+.dashboard-header h1:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.dashboard-header .btn-refresh:hover {
+    background-color: rgba(255, 255, 255, 0.8); /* Lighten the button on hover */
+    transform: scale(1.1); /* Slightly enlarge the button */
+}
+
+/* Keyframe animation for h1 */
+@keyframes bounceInDown {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
     .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
 }

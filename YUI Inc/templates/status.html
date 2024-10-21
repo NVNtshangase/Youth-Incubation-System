@@ -59,7 +59,7 @@
                 </span>
             </p>
             
-            {% if detail.application.application_status == 'Pending' %}
+            {% if detail.application.application_status == 'awaiting funding' %}
             <!-- Withdraw Button -->
             <form action="{{ url_for('application.withdraw_application', course_id=detail.courses[0].course_id) }}" method="POST">
                 <button type="submit" class="btn btn-danger mt-3">Withdraw Application</button>

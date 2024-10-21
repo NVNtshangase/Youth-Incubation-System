@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, session, url_for, flash, request
-from models.models import Donor, FinancialAid, Student, Take, User,Course, db
+from models.models import Donor, FinancialAid, Student, User,Course, db
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from blue_prints.donation import donation_bp
 from blue_prints.application import application_bp
@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  
+app.secret_key = ' ty7u8miooimnhbg-40_6jko0-6ojy'  
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////workspaces/Youth-Incubation-System/YUI Inc/instance/site.db'
 
 # Initialize the database
@@ -21,6 +21,7 @@ login_manager.login_view = 'login'  # Redirect here if not logged in
 app.register_blueprint(donation_bp)
 app.register_blueprint(application_bp)
 app.register_blueprint(certificate_bp)
+
 
 # Load user function
 @login_manager.user_loader
@@ -131,7 +132,7 @@ def login():
             session['user_id'] = user.id  
             flash('Login successful!', 'success')
             #seed_courses()
-            return redirect(url_for('home'))  
+            return redirect(url_for('dashboard'))  
         else:
             flash('Login failed. Check your email and/or password.', 'danger')
 
