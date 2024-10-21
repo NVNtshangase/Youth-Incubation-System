@@ -136,7 +136,7 @@ def donate():
                 flash('Profile created successfully', 'success')
 
                 # Redirect to the home page after profile creation
-                return redirect(url_for('home'))
+                return redirect(url_for('payment'))
 
         except Exception as e:
             flash("An error occurred while processing your request. Please try again later.", 'error')

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-wjdaMetqzozELr5zY/lSYGkdBgyEM++sKQ74qn8y8BhkvQJWl/0S4enIWJFUyqE" crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>Edit Profile</h1>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="flash {{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" >
+      <div class="form-group">
+        <label for="firstName">First Name:</label>
+        <input type="text" name="firstName" id="firstName" value="{{ user.first_name }}" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name:</label>
+        <input type="text" name="lastName" id="lastName" value="{{ user.last_name }}" class="form-control">
+     </div>
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" value="{{ user.email }}" class="form-control" muted>
+      </div>
+      <div class="form-group">
+        <label for="phoneNumber">Phone Number:</label>
+        <input type="tel" name="phoneNumber" id="phoneNumber" value="{{ user.phone_number }}" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="gender">Gender:</label>
+        <select name="gender" id="gender" class="form-control">
+          <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+          <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+          <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="age">Age:</label>
+        <input type="number" name="age" id="age" value="{{ user.age }}" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="idNumber">ID Number:</label>
+        <input type="text" name="idNumber" id="idNumber" value="{{ user.id_number }}" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="status">Status:</label>
+        <select name="status" id="status" class="form-control">
+          <option value="employed" {% if user.status == 'employed' %}selected{% endif %}>Employed</option>
+          <option value="unemployed" {% if user.status == 'unemployed' %}selected{% endif %}>Unemployed</option>
+          <option value="undergraduate student" {% if user.status == 'undergraduate student' %}selected{% endif %}>Undergraduate Student</option>
+          <option value="post graduate student" {% if user.status == 'post graduate student' %}selected{% endif %}>Post Graduate Student</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="certifiedIdDocument">Certified ID Document:</label>
+        <input type="file" name="certifiedIdDocument" id="certifiedIdDocument" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="matricStatement">Matric Statement:</label>
+        <input type="file" name="matricStatement" id="matricStatement" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="cv">CV:</label>
+        <input type="file" name="cv" id="cv" class="form-control">
+      </div>
+      <div class="form-group">
+        <label for="other supporting documents">Other supporting documents:</label>
+        <input type="file" name="other supporting documents" id="other supporting documents" class="form-control">
+      </div>
+      <div class="button-container">
+      <button class="btn btn-primary" type="submit">Update Profile</button>
+    </div>
+    </form>
+  <br>
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link" href="/change-password" data-toggle="tab" role="tab">Change Password</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/" data-toggle="tab" role="tab">go back to home</a>
+    </li>
+  </ul>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-kJQlgnfRzBUDhggonlHikYwfggX-j0nFxBCKlniQ8qR8Jp3i7z7RqHlujpeC4Z" crossorigin="anonymous"></script>
+</body>
+</html>
