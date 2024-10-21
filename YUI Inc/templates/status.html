@@ -8,7 +8,7 @@
     {% if earliest_application_details.application %}
     <div class="status-card earliest-application" 
          style="background-color: {{ 
-            earliest_application_details.application.application_status == 'Pending' and '#fff4e1' or 
+            earliest_application_details.application.application_status == 'awaiting funding' and '#fff4e1' or 
             earliest_application_details.application.application_status == 'In Progress' and '#e1f0ff' or 
             earliest_application_details.application.application_status == 'Successful' and '#e1ffe1' or 
             '#ffe1e1' 
@@ -20,7 +20,7 @@
             <p><strong>Date:</strong> {{ earliest_application_details.application.application_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
             <p><strong>Status:</strong> 
                 <span class="status-badge 
-                {% if earliest_application_details.application.application_status == 'Pending' %} pending
+                {% if earliest_application_details.application.application_status == 'awaiting funding' %} awaiting funding
                 {% elif earliest_application_details.application.application_status == 'In Progress' %} in-progress
                 {% elif earliest_application_details.application.application_status == 'Successful' %} successful
                 {% else %} rejected
@@ -39,7 +39,7 @@
     {% if detail.application.financial_aid != earliest_application_details.application.financial_aid %}
     <div class="status-card" 
          style="background-color: {{ 
-            detail.application.application_status == 'Pending' and '#fff4e1' or 
+            detail.application.application_status == 'awaiting funding' and '#fff4e1' or 
             detail.application.application_status == 'In Progress' and '#e1f0ff' or 
             detail.application.application_status == 'Successful' and '#e1ffe1' or 
             '#ffe1e1' 
@@ -50,7 +50,7 @@
             <p><strong>Date:</strong> {{ detail.application.application_date.strftime('%Y-%m-%d %H:%M:%S') }}</p>
             <p><strong>Status:</strong>
                 <span class="status-badge 
-                {% if detail.application.application_status == 'Pending' %} pending
+                {% if detail.application.application_status == 'awaiting funding' %} awaiting funding
                 {% elif detail.application.application_status == 'In Progress' %} in-progress
                 {% elif detail.application.application_status == 'Successful' %} successful
                 {% else %} rejected
