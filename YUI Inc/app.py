@@ -1,4 +1,6 @@
+import os
 from flask import Flask, render_template, redirect, session, url_for, flash, request
+import requests
 from models.models import Donor, FinancialAid, Student, User,Course, db
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from blue_prints.donation import donation_bp
@@ -121,26 +123,45 @@ def update_password():
 
     return render_template('update_profile.html', student=student)
 
+
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    # Get the reCAPTCHA keys from environment variables
+    sec_pk_nv = os.getenv('alt_pk')
+    sec_sk_nv = os.getenv('alt_sk')
+
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-        
-        # Retrieve the user by email
-        user = User.query.filter_by(username=email).first()  
+        recaptcha_response = request.form.get('g-recaptcha-response')  # Use get() instead of direct access
 
-        if user and check_password_hash(user.password, password):  
-            login_user(user) 
-            session['user_id'] = user.id  
+        recaptcha_verify_url = f"https://www.google.com/recaptcha/api/siteverify?secret={sec_sk_nv}&response={recaptcha_response}"
+        
+        # Verify reCAPTCHA
+        response = requests.post(recaptcha_verify_url)
+        result = response.json()
+
+        if not result.get('success'):
+            flash('Please complete the reCAPTCHA.', 'danger')
+            return render_template('login.html', sc_pk_nv=sec_pk_nv)
+
+        # Retrieve the user by email
+        user = User.query.filter_by(username=email).first()
+
+        if user and check_password_hash(user.password, password):
+            login_user(user)
+            session['user_id'] = user.id
             flash('Login successful!', 'success')
-            #seed_courses()
-            return redirect(url_for('dashboard'))  
+            return redirect(url_for('dashboard'))
         else:
             flash('Login failed. Check your email and/or password.', 'danger')
 
-    return render_template('login.html')
+    return render_template('login.html', sc_pk_nv=sec_pk_nv)
 
 @app.route('/dashboard')
 def dashboard():
