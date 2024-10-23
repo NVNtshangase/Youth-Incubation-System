@@ -152,6 +152,7 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user)
             session['user_id'] = user.id
+            #seed_courses()
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:

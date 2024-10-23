@@ -74,20 +74,16 @@
         </div>
 
         {% elif donor %}
-        <!-- Donation History -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-light h-100">
-                <div class="card-body d-flex flex-column text-center">
-                    <h2 class="card-title"><i class="fas fa-history"></i> Donation History</h2>
-                    <ul class="list-unstyled">
-                        {% for donation in donor.donations %}
-                            <li>Amount: ${{ donation.amount }} - Date: {{ donation.date }}</li>
-                        {% endfor %}
-                    </ul>
-                    <a href="#donation-history" class="btn btn-warning mt-auto">View Donation History</a>
-                </div>
-            </div>
+<!-- Donation History -->
+<div class="col-lg-4 col-md-6 mb-4">
+    <div class="card shadow border-light h-100">
+        <div class="card-body d-flex flex-column text-center">
+            <h2 class="card-title"><i class="fas fa-history"></i> Donation History</h2>
+            <p class="card-text">View your past contributions and their impact.</p>
+            <a href="{{ url_for('donation.donor_donation_history') }}" class="btn btn-primary mt-auto">View Your Donation History</a>
         </div>
+    </div>
+</div>
 
         <!-- Student Matches -->
         <div class="col-lg-4 col-md-6 mb-4">

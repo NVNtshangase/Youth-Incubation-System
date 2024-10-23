@@ -1,45 +1,31 @@
-from flask import Blueprint, render_template, request, send_file
-from models.models import Donor, db
-import io
-from fpdf import FPDF
+from flask import Blueprint, render_template
+from models.models import Donor, Payment, Certificate,db
+from datetime import datetime
 
-certificate_bp = Blueprint('certificate', __name__)
+certificate_bp = Blueprint('certificate_bp', __name__)
 
-@certificate_bp.route('/generate_certificate/<int:donor_id>')
-def generate_certificate(donor_id):
-    # Fetch donor information
-    donor = Donor.query.get(donor_id)
-    
-    if not donor:
-        return "Donor not found", 404
-    
-    # Create a PDF certificate
-    pdf = FPDF()
-    pdf.add_page()
-    
-    # Set font for the certificate
-    pdf.set_font("Arial", 'B', 24)
-    pdf.cell(0, 10, 'Certificate of Donation', ln=True, align='C')
-    
-    pdf.set_font("Arial", size=12)
-    pdf.ln(20)  # Line break
-    
-    # Add donor details
-    pdf.cell(0, 10, f"This is to certify that:", ln=True, align='C')
-    pdf.ln(10)  # Line break
-    pdf.cell(0, 10, f"{donor.donor_name} {donor.donor_surname}", ln=True, align='C')
-    pdf.cell(0, 10, f"ID Number: {donor.donor_id_number}", ln=True, align='C')
-    
-    pdf.ln(20)  # Line break
-    pdf.cell(0, 10, "has made a generous donation.", ln=True, align='C')
-    
-    pdf.ln(10)  # Line break
-    pdf.cell(0, 10, "Thank you for your support!", ln=True, align='C')
-    
-    # Save the PDF to a bytes buffer
-    buffer = io.BytesIO()
-    pdf.output(buffer)
-    buffer.seek(0)
+@certificate_bp.route('/certificate/<int:donor_code>', methods=['GET'])
+def view_certificate(donor_code):
+    # Fetch donor and payment details
+    donor = Donor.query.filter_by(donor_code=donor_code).first()
+    payments = Payment.query.filter_by(donor_code=donor_code).order_by(Payment.payment_date.desc()).all()
 
-    # Send the PDF file as a response
-    return send_file(buffer, as_attachment=True, download_name='certificate.pdf', mimetype='application/pdf')
+    # Assuming there is a method to generate the certificate
+    certificate = generate_certificate(donor)  # Implement this function below
+
+    return render_template('certificate.html', donor=donor, payments=payments, certificate=certificate)
+
+def generate_certificate(donor):
+    # You can customize the certificate details as needed
+    certificate = Certificate(
+        certificate_name=f"Thank You Certificate for {donor.donor_name} {donor.donor_surname}",
+        certificate_date_issued=datetime.now().date(),
+        certificate_message="Thank you for your generous donation!",
+        certificate_signature="YUI Inc", 
+        donor_code=donor.donor_code
+    )
+    
+    db.session.add(certificate)
+    db.session.commit()
+
+    return certificate

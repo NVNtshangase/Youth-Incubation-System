@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Certificate of Donation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(120deg, #f0f4f8, #a7ffeb);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .certificate {
+            width: 90%;
+            max-width: 1000px;
+            background-color: #ffffff;
+            padding: 40px;
+            border: 5px solid #004d40;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            position: relative;
+            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        
+
+        /* Side border gradient effect */
+        .certificate:before, .certificate:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 20px;
+            background: linear-gradient(to bottom, #004d40, #1de9b6);
+            border-radius: 15px;
+        }
+
+        .certificate:before {
+            left: -30px;
+        }
+
+        .certificate:after {
+            right: -30px;
+        }
+
+        /* Logo section */
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 90px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #004d40;
+        }
+
+        /* Certificate title */
+        h1 {
+            font-size: 44px;
+            color: #004d40;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+        }
+
+        .divider {
+            border-top: 2px solid #004d40;
+            margin: 20px 0;
+        }
+
+        /* Certificate content styling */
+        .info {
+            font-size: 20px;
+            margin: 10px 0;
+            line-height: 1.8;
+            text-align: left;
+        }
+
+        .info strong {
+            color: #004d40;
+        }
+
+        .icon {
+            margin-right: 7px;
+            color: #004d40;
+        }
+
+        .message {
+            font-size: 20px;
+            font-style: italic;
+            color: #555;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Signature section */
+        .signature {
+            font-size: 22px;
+            margin-top: 40px;
+            color: #004d40;
+            font-weight: bold;
+        }
+
+        /* Footer with inspirational message */
+        .footer-message {
+            font-size: 18px;
+            font-style: italic;
+            color: #004d40;
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        /* Overall button container */
+.btn-container {
+    display: flex;
+    justify-content: space-between; /* Spread buttons to the left and right */
+    margin-top: 30px;
+    padding: 10px;
+    background-color: rgba(0, 77, 64, 0.1); /* Light background for the container */
+    border-radius: 10px;
+    margin-bottom: 20px;
+    width: 90%; /* Match the width of the certificate */
+    max-width: 1000px; /* Match the max width of the certificate */
+}
+
+/* Button styles */
+button, a {
+    padding: 12px 24px; /* Adjust padding for better sizing */
+    background-color: #004d40; /* Button background color */
+    color: white; /* Text color */
+    border: none; /* No border */
+    border-radius: 7px; /* Rounded corners */
+    text-decoration: none; /* Remove underline for links */
+    font-size: 18px; /* Font size */
+    cursor: pointer; /* Pointer on hover */
+    transition: background-color 0.3s, transform 0.3s; /* Smooth transition */
+}
+
+/* Hover effect */
+button:hover, a:hover {
+    background-color: #1de9b6; /* Change background on hover */
+    transform: translateY(-3px); /* Slight lift effect */
+}
+
+/* Focus effect */
+button:focus, a:focus {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 5px #1de9b6; /* Add glow effect */
+}
+</style>
+</head>
+<body>
+    <div class="certificate">
+        <div class="logo-section">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Company Logo" class="logo">
+            <span class="company-name">YUI Inc</span>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <h1>Certificate of Donation</h1>
+        <div class="divider"></div>
+
+        <p class="info"><i class="fas fa-user icon"></i>Issued to: <strong>{{ donor.donor_name }} {{ donor.donor_surname }}</strong></p>
+        <p class="info"><i class="fas fa-id-card icon"></i>ID Number: <strong>{{ donor.donor_id_number }}</strong></p>
+        <p class="info"><i class="fas fa-coins icon"></i>Donation Amount: <strong>R{{ "%.2f"|format(payments[0].payment_amount) }}</strong></p>
+        <p class="info"><i class="fas fa-calendar-alt icon"></i>Date of Donation: <strong>{{ payments[0].payment_date.strftime('%Y-%m-%d') }}</strong></p>
+        <p class="info"><i class="fas fa-calendar-check icon"></i>Date Issued: <strong>{{ certificate.certificate_date_issued }}</strong></p>
+        <p class="message"><i class="fas fa-comment-dots icon"></i>{{ certificate.certificate_message }}</p>
+
+        <p class="signature"><i class="fas fa-signature icon"></i>Signature: <strong>{{ certificate.certificate_signature }}</strong></p>
+
+        <!-- Footer message instead of buttons inside certificate -->
+        <p class="footer-message">"Your generous donation lights the way for many. Thank you for your kindness and continued support."</p>
+    </div>
+
+    <!-- Button container moved below certificate -->
+    <div class="btn-container">
+        <button onclick="window.print()"><i class="fas fa-download icon"></i>Download Certificate</button>
+        <a href="{{ url_for('dashboard') }}"><i class="fas fa-times icon"></i>Close</a>
+    </div>
+</body>
+</html>

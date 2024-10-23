@@ -1,4 +1,3 @@
-import datetime
 import re
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from models.models import Payment, User, Donor, db
@@ -8,7 +7,6 @@ import os
 from dotenv import load_dotenv
 import requests
 from flask_login import current_user, login_required
-from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -239,7 +237,7 @@ def initialize_payment():
 @donation_bp.route('/verify-payment', methods=['GET'])
 def verify_payment():
     reference = request.args.get('reference')
-    
+
     if not reference:
         flash('Payment reference missing. Unable to verify payment.', 'error')
         return redirect(url_for('dashboard'))
@@ -254,12 +252,10 @@ def verify_payment():
     response = requests.get(verify_payment_url, headers=headers)
     response_data = response.json()
 
-    # If successful
     if response.status_code == 200 and response_data['status']:
         data = response_data['data']
         if data['status'] == 'success':
-            # Extract payment details
-            amount = data['amount'] / 100  # kobo to the original amount
+            amount = data['amount'] / 100  # Convert kobo to original amount
             donor_code = data['metadata'].get('donor_code')  
 
             new_payment = Payment(
@@ -270,14 +266,25 @@ def verify_payment():
             db.session.add(new_payment)
             db.session.commit()
 
-            flash('Payment successful. Thank you for your donation!', 'success')
-            return redirect(url_for('dashboard'))  # Change 'dashboard' to your desired route
+            # Make sure to pass the donor_code to the URL
+            return redirect(url_for('certificate_bp.view_certificate', donor_code=donor_code)) 
+
         else:
             flash('Payment verification failed. Please try again.', 'error')
     else:
-        #  Paystack Info
         error_message = response_data.get('message', 'Payment verification failed.')
         print("Paystack error:", error_message)
         flash(f'Payment verification failed: {error_message}', 'error')
 
     return redirect(url_for('dashboard'))
+
+
+@donation_bp.route('/donor/history', methods=['GET'])
+@login_required
+def donor_donation_history():
+    # Fetch payments related to the current donor
+    payments = Payment.query.filter_by(donor_code=current_user.donor.donor_code).all()  # Correctly access donor_code
+    return render_template('donation_history.html', payments=payments)
+
+
+
