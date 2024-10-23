@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+{% endif %}
+{% endwith %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Your Certificate History</h1>
+    
+    <!-- Back to Dashboard Button -->
+    <div class="text-center mb-4">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+    
+    <div class="row">
+        {% for certificate in certificates %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card shadow border-light h-100">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ certificate.certificate_name }}</h5>
+                    <p class="text-muted">Date Issued: {{ certificate.certificate_date_issued.strftime('%Y-%m-%d') }}</p>
+                    <a href="{{ url_for('download_certificate', certificate_id=certificate.certificate_id) }}" class="btn btn-primary">Download Certificate</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% if certificates|length == 0 %}
+        <p class="text-center text-muted">No certificates found.</p>
+    {% endif %}
+</div>
+<style>
+    .card {
+        transition: transform 0.2s;
+    }
+    
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #004d40;
+    }
+    
+    .btn-primary {
+        background-color: #1de9b6; /* Customize button color */
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background-color: #004d40; /* Darker shade on hover */
+    }
+
+    .btn-secondary {
+        background-color: #6c757d; /* Secondary button color */
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268; /* Darker shade on hover */
+    }
+</style>
+{% endblock %}

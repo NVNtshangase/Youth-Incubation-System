@@ -32,7 +32,6 @@
                 <div class="card-body" id="sharedCard">
                     <form method="POST" action="/update_profile" id="profileForm">
                         <input type="hidden" name="csrf_token" value="your-csrf-token">
-                        
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -55,7 +54,6 @@
                             <label for="phone_number" class="form-label">Phone Number</label>
                             <input type="text" required id="phone_number" class="form-control" name="phone_number" value="{{ user_profile.student_phone_number if student else user_profile.donor_phone_number }}">
                         </div>
-
                         <div class="d-flex justify-content-between mt-4">
                             <button type="submit" class="btn btn-primary">Update Profile</button>
                         </div>

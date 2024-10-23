@@ -1,18 +1,16 @@
-import os
-from flask import Flask, render_template, redirect, session, url_for, flash, request
-import requests
-from models.models import Donor, FinancialAid, Student, User,Course, db
+from flask import Flask, render_template, redirect, send_file, session, url_for, flash, request
+import requests, os
+from models.models import Certificate, Donor, FinancialAid, Student, User,Course, db
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from blue_prints.donation import donation_bp
 from blue_prints.application import application_bp
 from blue_prints.certificate import certificate_bp
-from werkzeug.security import check_password_hash 
-from werkzeug.security import generate_password_hash
+from werkzeug.security import check_password_hash ,generate_password_hash
 from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = ' ty7u8miooimnhbg-40_6jko0-6ojy'  
+app.secret_key = ' ty7u8miooimnhbg-40_6jko0-6ojycdfvgbhjnmknbgvfcdxsdfgvbhju3etyrty2uhij'  
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////workspaces/Youth-Incubation-System/YUI Inc/instance/site.db'
 
 # Initialize the database
@@ -59,6 +57,7 @@ def update_profile():
 
     # If the user is a student, use the student profile. If they're a donor, use the donor profile.
     user_profile = student if student else donor
+    is_student = student is not None
 
     if request.method == 'POST':
         name = request.form.get('first_name')
@@ -97,7 +96,7 @@ def update_profile():
         flash('Profile updated successfully.', 'success')
         return redirect(url_for('dashboard'))
 
-    return render_template('update_profile.html', user_profile=user_profile)
+    return render_template('update_profile.html', user_profile=user_profile,student=is_student)
 
 @app.route('/update_password', methods=['GET', 'POST'])
 def update_password():
@@ -124,7 +123,6 @@ def update_password():
 
     return render_template('update_profile.html', student=student)
 
-# Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     # Get the reCAPTCHA keys from environment variables
@@ -152,6 +150,12 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user)
             session['user_id'] = user.id
+            
+            # Check if the user is a donor and get the donor code
+            if user.role == 'donor':
+                donor = Donor.query.filter_by(user_id=user.id).first()
+                if donor:
+                    session['donor_code'] = donor.donor_code  
             #seed_courses()
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
@@ -169,7 +173,8 @@ def dashboard():
     user = User.query.get(session['user_id']) 
     student = None
     donor = None
-    total_applications = 0  # Initialize to hold the number of applications
+    total_applications = 0 
+    certificates_count = 0  # Initialize the count
 
     if user.role == 'student':
         student = Student.query.filter_by(user_id=user.id).first()
@@ -180,11 +185,15 @@ def dashboard():
             
     elif user.role == 'donor':
         donor = Donor.query.filter_by(user_id=user.id).first()
+        
+        if donor:
+            # Now retrieve the donor_code from the donor object
+            certificates_count = Certificate.query.filter_by(donor_code=donor.donor_code).count()
     else:
         flash("Unauthorized access.", 'danger')
         return redirect(url_for('home'))
 
-    return render_template('dashboard.html', user=user, student=student, donor=donor, total_applications=total_applications)
+    return render_template('dashboard.html', user=user, student=student, donor=donor, total_applications=total_applications, certificates_count=certificates_count)
 
 # Define a list of courses to seed into the database
 practical_skill_courses = [
@@ -324,6 +333,45 @@ def status():
     except Exception as e:
         flash(f"An error occurred while fetching your application status: {e}", 'danger')
         return redirect(url_for('dashboard'))
+
+@app.route('/certificate-history')
+def certificate_history():
+    donor_code = session.get('donor_code')
+    print(f"Donor Code from session: {donor_code}")  # Debugging line
+
+    # Query the certificates for this donor
+    certificates = Certificate.query.filter_by(donor_code=donor_code).all()
+
+    return render_template('certificate_history.html', certificates=certificates)
+
+@app.route('/download-certificate/<int:certificate_id>')
+def download_certificate(certificate_id):
+    try:
+        # Fetch the certificate based on its ID
+        certificate = Certificate.query.get(certificate_id)
+        
+        # Check if the certificate exists
+        if certificate:
+
+            pdf_path = f"certificates/{certificate.donor_code}_certificate.pdf"  # *****path fix-generating fix
+            
+            # Check if the file exists before sending it
+            if os.path.exists(pdf_path):
+                return send_file(pdf_path, as_attachment=True)
+
+            # If the file does not exist, flash a message
+            flash('The certificate file is not available for download.', 'warning')
+            return redirect(url_for('certificate_history'))  # Redirect to the certificate history page
+
+        # If the certificate does not exist, flash a message
+        flash('Certificate not found.', 'danger')
+        return redirect(url_for('certificate_history'))  # Redirect to the certificate history page
+
+    except Exception as e:
+        # Log the exception if needed (you can also set up logging)
+        print(f"An error occurred: {e}")
+        flash('An unexpected error occurred while trying to download the certificate.', 'danger')
+        return redirect(url_for('certificate_history'))  # Redirect to the certificate history page
 
 if __name__ == '__main__':
     with app.app_context():

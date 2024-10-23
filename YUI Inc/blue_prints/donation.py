@@ -295,14 +295,9 @@ def verify_payment():
 
     return redirect(url_for('dashboard'))
 
-
-
-
-
-
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+S_K_P = os.getenv('S_K_P')
 from sendgrid.helpers.mail import Attachment
 import base64
 
@@ -349,7 +344,7 @@ def send_notification(donor):
         )
         message.attachment = attachment
 
-        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        sg = SendGridAPIClient(S_K_P)
         sg.send(message)
         print("Email sent successfully.")
     except Exception as e:

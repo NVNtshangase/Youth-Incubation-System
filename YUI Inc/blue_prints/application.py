@@ -14,18 +14,17 @@ from werkzeug.security import generate_password_hash
 
 application_bp = Blueprint('application', __name__)
 
-
 def extract_dob_from_sa_id(id_number):
     try:
-        dob_str = id_number[:6]  # First 6 digits represent YYMMDD
-        year = int(dob_str[:2])  # Extract the year part
-        month = int(dob_str[2:4])  # Extract the month part
-        day = int(dob_str[4:6])  # Extract the day part
+        dob_str = id_number[:6] 
+        year = int(dob_str[:2])  
+        month = int(dob_str[2:4])  
+        day = int(dob_str[4:6])  
 
         # Determine the century based on the year
-        if year >= 0 and year <= 22:  # Assuming 2000 to 2022
+        if year >= 0 and year <= 22:  
             year += 2000
-        elif year >= 23 and year <= 99:  # Assuming 1923 to 1999
+        elif year >= 23 and year <= 99: 
             year += 1900
         else:
             raise ValueError("Invalid year in ID number")
@@ -37,8 +36,8 @@ def extract_dob_from_sa_id(id_number):
         return None
 
 def calculate_age(dob):
-    today = datetime.now().date()  # Get today's date
-    age = today.year - dob.year  # Calculate preliminary age
+    today = datetime.now().date() 
+    age = today.year - dob.year  
 
     # Adjust age if the birthday hasn't occurred yet this year
     if (today.month, today.day) < (dob.month, dob.day):
@@ -250,6 +249,7 @@ def apply(course_id):
 def course_view():
     courses = Course.query.all() 
     return render_template('course_view.html', courses=courses)
+
 @application_bp.route('/withdraw/<int:course_id>', methods=['POST'])
 def withdraw_application(course_id):
     if not current_user.is_authenticated:

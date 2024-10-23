@@ -16,7 +16,6 @@ class User(db.Model, UserMixin):
     student = db.relationship('Student', backref='user', uselist=False, cascade='all, delete-orphan', lazy='joined')
     donor = db.relationship('Donor', backref='user', uselist=False, cascade='all, delete-orphan', lazy='joined')
 
-
 # Student Table
 class Student(db.Model):
     __tablename__ = 'student'
@@ -46,7 +45,6 @@ class Student(db.Model):
     financial_aid = db.relationship('FinancialAid', backref='student', cascade='all, delete-orphan', lazy='joined')
     courses = db.relationship('Course', secondary='take', back_populates='students', lazy='dynamic')
 
-
 # Donor Table
 class Donor(db.Model):
     __tablename__ = 'donor'
@@ -65,7 +63,6 @@ class Donor(db.Model):
     payments = db.relationship('Payment', backref='donor', cascade='all, delete-orphan', lazy='joined')
     certificates = db.relationship('Certificate', backref='donor', cascade='all, delete-orphan', lazy='joined')
 
-
 # Financial Aid Table
 class FinancialAid(db.Model):
     __tablename__ = 'financial_aid'
@@ -81,7 +78,6 @@ class FinancialAid(db.Model):
         # Get all courses associated with the student via the Take association
         return Course.query.join(Take).filter(Take.student_code == self.student_code).all()
 
-
 # Course Table
 class Course(db.Model):
     __tablename__ = 'course'
@@ -95,14 +91,12 @@ class Course(db.Model):
     # Relationship for students taking courses
     students = db.relationship('Student', secondary='take', back_populates='courses', lazy='dynamic')
 
-
 # Association Table between Student and Course
 class Take(db.Model):
     __tablename__ = 'take'
     
     student_code = db.Column(db.Integer, db.ForeignKey('student.student_code'), primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('course.course_id'), primary_key=True)
-
 
 class Payment(db.Model):
     __tablename__ = 'payment'
@@ -122,7 +116,6 @@ class Payment(db.Model):
         # Set the timezone to SAST
         sa_tz = pytz.timezone('Africa/Johannesburg')
         return dt.now(sa_tz)
-
 
 # Certificate Table
 class Certificate(db.Model):
