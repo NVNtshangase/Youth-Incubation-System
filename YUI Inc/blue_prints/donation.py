@@ -1,6 +1,6 @@
 import re
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
-from models.models import Payment, User, Donor, db
+from models.models import Certificate, Payment, User, Donor, db
 from werkzeug.security import generate_password_hash
 import phonenumbers
 import os
@@ -169,6 +169,13 @@ def pay():
                             donor_surname=donor.donor_surname,
                             email=donor.donor_email)
 
+@donation_bp.route('/donor/history', methods=['GET'])
+@login_required
+def donor_donation_history():
+    # Fetch payments related to the current donor
+    payments = Payment.query.filter_by(donor_code=current_user.donor.donor_code).all()  # Correctly access donor_code
+    return render_template('donation_history.html', payments=payments)
+
 @donation_bp.route('/initialize-payment', methods=['POST'])
 def initialize_payment():
     # Retrieve form data
@@ -265,6 +272,16 @@ def verify_payment():
 
             db.session.add(new_payment)
             db.session.commit()
+            
+            donor = Donor.query.filter_by(donor_code=donor_code).first()
+
+            # Check if donor exists and has an email
+            if donor and donor.donor_email:
+                # Send the email notification
+                send_notification(donor)
+            else:
+                print("Donor not found or email is missing.")
+            
 
             # Make sure to pass the donor_code to the URL
             return redirect(url_for('certificate_bp.view_certificate', donor_code=donor_code)) 
@@ -279,12 +296,88 @@ def verify_payment():
     return redirect(url_for('dashboard'))
 
 
-@donation_bp.route('/donor/history', methods=['GET'])
-@login_required
-def donor_donation_history():
-    # Fetch payments related to the current donor
-    payments = Payment.query.filter_by(donor_code=current_user.donor.donor_code).all()  # Correctly access donor_code
-    return render_template('donation_history.html', payments=payments)
 
 
 
+
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+from sendgrid.helpers.mail import Attachment
+import base64
+
+def send_notification(donor):
+    try:
+        # Fetch the latest payment for a donor
+        payment = Payment.query.filter_by(donor_code=donor.donor_code).order_by(Payment.payment_id.desc()).first()
+
+        if payment is None:
+            print("No payment found for donor:", donor.donor_code)
+            return  # Exit if no payment found
+
+        certificate = Certificate.query.filter_by(donor_code=donor.donor_code).first()
+        
+        if certificate is None:
+            print("No certificate found for donor:", donor.donor_code)
+            return  # Exit if no certificate found
+
+        # Generate the PDF certificate
+        pdf_path = generate_certificate(donor, payment, certificate)
+
+        # Read the PDF file for attachment
+        with open(pdf_path, "rb") as f:
+            data = f.read()
+            encoded_file = base64.b64encode(data).decode()
+            attachment = Attachment(
+                file_content=encoded_file,
+                file_type='application/pdf',
+                file_name='certificate.pdf',
+                disposition='attachment'
+            )
+
+        message = Mail(
+            from_email='ntandoyenkosivezokuhle360@gmail.com', 
+            to_emails=donor.donor_email,
+            subject='Thank You for Your Donation!',
+            html_content=f'''
+                <h1>Dear {donor.donor_name},</h1>
+                <p>Thank you for your generous donation!</p>
+                <p>Your donation has been successfully processed.</p>
+                <p>Please find your certificate attached.</p>
+                <p>Warm regards,<br>YUI Inc.</p>
+            '''
+        )
+        message.attachment = attachment
+
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        sg.send(message)
+        print("Email sent successfully.")
+    except Exception as e:
+        print(f"Error sending email: {str(e)}")
+
+
+from flask import render_template
+from weasyprint import HTML
+
+def generate_certificate(donor, payment, certificate):
+    # Ensure the certificates directory exists
+    if not os.path.exists('certificates'):
+        os.makedirs('certificates')
+    
+    # Render the HTML template
+    rendered_html = render_template(
+        'certificate_template.html',  # Make sure this file exists
+        donor=donor,
+        payments=[payment],  # Pass the payment data
+        certificate=certificate
+    )
+
+    # Create the PDF from the rendered HTML
+    pdf = HTML(string=rendered_html).write_pdf()
+
+    # Save the PDF to a file
+    pdf_path = f"certificates/{donor.donor_code}_certificate.pdf"
+    with open(pdf_path, 'wb') as f:
+        f.write(pdf)
+
+    return pdf_path
