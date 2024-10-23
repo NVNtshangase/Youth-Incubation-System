@@ -8,6 +8,8 @@ from blue_prints.application import application_bp
 from blue_prints.certificate import certificate_bp
 from werkzeug.security import check_password_hash 
 from werkzeug.security import generate_password_hash
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = ' ty7u8miooimnhbg-40_6jko0-6ojy'  
@@ -23,7 +25,6 @@ login_manager.login_view = 'login'  # Redirect here if not logged in
 app.register_blueprint(donation_bp)
 app.register_blueprint(application_bp)
 app.register_blueprint(certificate_bp)
-
 
 # Load user function
 @login_manager.user_loader
@@ -123,11 +124,6 @@ def update_password():
 
     return render_template('update_profile.html', student=student)
 
-
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
 # Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():

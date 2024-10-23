@@ -1,6 +1,7 @@
+from datetime import datetime as dt
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import func
 from flask_login import UserMixin
+import pytz
 
 db = SQLAlchemy()
 
@@ -103,16 +104,24 @@ class Take(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('course.course_id'), primary_key=True)
 
 
-# Payment Table
 class Payment(db.Model):
     __tablename__ = 'payment'
     
     payment_id = db.Column(db.Integer, primary_key=True)
     payment_amount = db.Column(db.Float, nullable=False)
-    payment_date = db.Column(db.Date, nullable=False)
-    payment_method = db.Column(db.String(50), nullable=False)
-
+    payment_date = db.Column(db.DateTime, nullable=False)  # Change to DateTime
     donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))
+
+    def __init__(self, payment_amount, donor_code):
+        self.payment_amount = payment_amount
+        self.donor_code = donor_code
+        self.payment_date = self.get_current_sast_time()  
+        
+    @staticmethod
+    def get_current_sast_time():
+        # Set the timezone to SAST
+        sa_tz = pytz.timezone('Africa/Johannesburg')
+        return dt.now(sa_tz)
 
 
 # Certificate Table

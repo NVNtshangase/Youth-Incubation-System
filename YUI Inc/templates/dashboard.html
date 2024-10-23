@@ -8,10 +8,6 @@
         <h1 class="display-4 animate__animated animate__fadeInDown">Welcome to Your Dashboard</h1>
         <button class="btn btn-light btn-refresh" onclick="refreshDashboard()">Refresh Dashboard</button>
     </header>
-    
-
-    <!-- Flash Messages -->
-    <div class="row mt-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             {% for category, message in messages %}
@@ -24,7 +20,7 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-    </div>
+   
 
     <!-- Cards Section -->
     <div class="row mt-4">
@@ -114,7 +110,7 @@
                 <div class="card-body d-flex flex-column text-center">
                     <h2 class="card-title"><i class="fas fa-donate"></i> Make a Donation</h2>
                     <p>Help more students by donating today.</p>
-                    <a href="donate" class="btn btn-success mt-auto">Donate Now</a>
+                    <a href="pay" class="btn btn-success mt-auto">Donate Now</a>
                 </div>
             </div>
         </div>
