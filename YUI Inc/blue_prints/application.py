@@ -151,6 +151,7 @@ def application(course_id):
                 disability=application_info.get('disability', ''), 
                 criminal_record=application_info.get('criminal_record', ''),
                 age=age,
+                owing_amount=int(course.course_cost),
                 user_id=new_user.id,
                 course_code=course.course_id
             )

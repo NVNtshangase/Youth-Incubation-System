@@ -241,60 +241,6 @@ def initialize_payment():
         flash('An unexpected error occurred. Please try again later.', 'error')
         return redirect(url_for('dashboard'))
 
-@donation_bp.route('/verify-payment', methods=['GET'])
-def verify_payment():
-    reference = request.args.get('reference')
-
-    if not reference:
-        flash('Payment reference missing. Unable to verify payment.', 'error')
-        return redirect(url_for('dashboard'))
-
-    verify_payment_url = f'{PAYSTACK_BASE_URL}/transaction/verify/{reference}'
-    
-    headers = {
-        'Authorization': f'Bearer {PAYSTACK_SECRET_KEY}',
-        'Content-Type': 'application/json',
-    }
-
-    response = requests.get(verify_payment_url, headers=headers)
-    response_data = response.json()
-
-    if response.status_code == 200 and response_data['status']:
-        data = response_data['data']
-        if data['status'] == 'success':
-            amount = data['amount'] / 100  # Convert kobo to original amount
-            donor_code = data['metadata'].get('donor_code')  
-
-            new_payment = Payment(
-                payment_amount=amount,
-                donor_code=donor_code
-            ) 
-
-            db.session.add(new_payment)
-            db.session.commit()
-            
-            donor = Donor.query.filter_by(donor_code=donor_code).first()
-
-            # Check if donor exists and has an email
-            if donor and donor.donor_email:
-                # Send the email notification
-                send_notification(donor)
-            else:
-                print("Donor not found or email is missing.")
-            
-
-            # Make sure to pass the donor_code to the URL
-            return redirect(url_for('certificate_bp.view_certificate', donor_code=donor_code)) 
-
-        else:
-            flash('Payment verification failed. Please try again.', 'error')
-    else:
-        error_message = response_data.get('message', 'Payment verification failed.')
-        print("Paystack error:", error_message)
-        flash(f'Payment verification failed: {error_message}', 'error')
-
-    return redirect(url_for('dashboard'))
-
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 S_K_P = os.getenv('S_K_P')
@@ -350,7 +296,6 @@ def send_notification(donor):
     except Exception as e:
         print(f"Error sending email: {str(e)}")
 
-
 from flask import render_template
 from weasyprint import HTML
 
@@ -371,8 +316,72 @@ def generate_certificate(donor, payment, certificate):
     pdf = HTML(string=rendered_html).write_pdf()
 
     # Save the PDF to a file
-    pdf_path = f"certificates/{donor.donor_code}_certificate.pdf"
+
+    # Generate a unique filename with donor and certificate IDs
+    pdf_filename = f"{donor.donor_code}_{certificate.id}_certificate.pdf"
+    pdf_path = os.path.join('certificates', pdf_filename)
     with open(pdf_path, 'wb') as f:
         f.write(pdf)
 
     return pdf_path
+
+@donation_bp.route('/verify-payment', methods=['GET'])
+def verify_payment():
+    reference = request.args.get('reference')
+
+    if not reference:
+        flash('Payment reference missing. Unable to verify payment.', 'error')
+        return redirect(url_for('dashboard'))
+
+    verify_payment_url = f'{PAYSTACK_BASE_URL}/transaction/verify/{reference}'
+    
+    headers = {
+        'Authorization': f'Bearer {PAYSTACK_SECRET_KEY}',
+        'Content-Type': 'application/json',
+    }
+
+    response = requests.get(verify_payment_url, headers=headers)
+    response_data = response.json()
+
+    if response.status_code == 200 and response_data['status']:
+        data = response_data['data']
+        if data['status'] == 'success':
+            amount = data['amount'] / 100  # Convert kobo to original amount
+            donor_code = data['metadata'].get('donor_code')
+
+            # Find the donor based on the donor_code
+            donor = Donor.query.filter_by(donor_code=donor_code).first()
+
+            if donor:
+                # Update donor's balance
+                donor.balance += amount
+
+                # Record the payment
+                new_payment = Payment(
+                    payment_amount=amount,
+                    donor_code=donor_code
+                )
+
+                db.session.add(new_payment)
+                db.session.commit()
+
+                # Check if donor exists and has an email
+                if donor.donor_email:
+                    # Send the email notification
+                    send_notification(donor)
+                else:
+                    print("Donor not found or email is missing.")
+
+                # Redirect to view certificate
+                return redirect(url_for('certificate_bp.view_certificate', donor_code=donor_code))
+            else:
+                flash('Donor not found.', 'error')
+
+        else:
+            flash('Payment verification failed. Please try again.', 'error')
+    else:
+        error_message = response_data.get('message', 'Payment verification failed.')
+        print("Paystack error:", error_message)
+        flash(f'Payment verification failed: {error_message}', 'error')
+
+    return redirect(url_for('dashboard'))

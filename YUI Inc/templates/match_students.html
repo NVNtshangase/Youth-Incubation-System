@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Recommended Students</h1>
+
+        <div class="text-center mb-4">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+
+        {% if students %}
+            <div class="row">
+                {% for student in students %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card shadow-sm h-100 hover-card">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    {{ student.student_name }} {{ student.student_surname }}
+                                </h5>
+                                <p class="card-text">
+                                    <strong>Owing Amount:</strong> R {{ student.owing_amount }}
+                                </p>
+                                <form action="{{ url_for('allocate_funds', student_id=student.student_code) }}" method="POST">
+                                    <button type="submit" class="btn btn-primary w-100">Allocate Funds</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center" role="alert">
+                Dear donor, based on your current balance of R {{ donor.balance }},  
+                your generosity can still make a difference — please consider donating more funds to support students in need!
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Optional: Add JS to ensure smooth hover interactions if needed.
+        document.addEventListener("DOMContentLoaded", () => {
+            const cards = document.querySelectorAll(".hover-card");
+
+            cards.forEach((card) => {
+                card.addEventListener("mouseover", () => {
+                    card.classList.add("hovered");
+                });
+
+                card.addEventListener("mouseout", () => {
+                    card.classList.remove("hovered");
+                });
+            });
+        });
+    </script>
+
+    <style>
+        /* Smooth transition for hover effects */
+        .hover-card {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Scale up and add shadow on hover */
+        .hover-card.hovered {
+            transform: translateY(-5px); /* Slight raise effect */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+        }
+
+        /* Button hover effect */
+        .hover-card .btn-primary {
+            transition: background-color 0.3s ease;
+        }
+
+        .hover-card .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 576px) {
+            .hover-card {
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+{% endblock %}

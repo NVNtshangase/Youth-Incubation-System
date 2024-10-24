@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, send_file, session, url_for, flash, request
 import requests, os
-from models.models import Certificate, Donor, FinancialAid, Student, User,Course, db
+from models.models import Certificate, Donor, FinancialAid, Payment, Student, User,Course, db
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from blue_prints.donation import donation_bp
 from blue_prints.application import application_bp
@@ -156,7 +156,7 @@ def login():
                 donor = Donor.query.filter_by(user_id=user.id).first()
                 if donor:
                     session['donor_code'] = donor.donor_code  
-            #seed_courses()
+            seed_courses()
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -164,6 +164,7 @@ def login():
 
     return render_template('login.html', sc_pk_nv=sec_pk_nv)
 
+@app.route('/dashboard')
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:  # Check if user_id is in session
@@ -175,6 +176,7 @@ def dashboard():
     donor = None
     total_applications = 0 
     certificates_count = 0  # Initialize the count
+    donor_balance = 0  # Initialize donor balance
 
     if user.role == 'student':
         student = Student.query.filter_by(user_id=user.id).first()
@@ -187,13 +189,19 @@ def dashboard():
         donor = Donor.query.filter_by(user_id=user.id).first()
         
         if donor:
-            # Now retrieve the donor_code from the donor object
+            donor_balance = donor.balance  # Get the donor's balance
+            # Retrieve matches based on donor's balance
+            donor.matches = get_recommended_students(donor_balance)  # Fetch matches for the donor
             certificates_count = Certificate.query.filter_by(donor_code=donor.donor_code).count()
+    
     else:
         flash("Unauthorized access.", 'danger')
         return redirect(url_for('home'))
 
-    return render_template('dashboard.html', user=user, student=student, donor=donor, total_applications=total_applications, certificates_count=certificates_count)
+    return render_template('dashboard.html', user=user, student=student, donor=donor, 
+                           total_applications=total_applications, 
+                           certificates_count=certificates_count, 
+                           donor_balance=donor_balance)
 
 # Define a list of courses to seed into the database
 practical_skill_courses = [
@@ -347,32 +355,119 @@ def certificate_history():
 @app.route('/download-certificate/<int:certificate_id>')
 def download_certificate(certificate_id):
     try:
-        # Fetch the certificate based on its ID
-        certificate = Certificate.query.get(certificate_id)
-        
-        # Check if the certificate exists
-        if certificate:
+        # Fetch the certificate by ID
+        certificate = Certificate.query.get_or_404(certificate_id)  # Raises 404 if not found
 
-            pdf_path = f"certificates/{certificate.donor_code}_certificate.pdf"  # *****path fix-generating fix
-            
-            # Check if the file exists before sending it
-            if os.path.exists(pdf_path):
-                return send_file(pdf_path, as_attachment=True)
+        # Generate the file path based on donor code and certificate ID
+        pdf_filename = f"{certificate.donor_code}_{certificate.id}_certificate.pdf"
+        pdf_path = os.path.join('certificates', pdf_filename)
 
-            # If the file does not exist, flash a message
-            flash('The certificate file is not available for download.', 'warning')
-            return redirect(url_for('certificate_history'))  # Redirect to the certificate history page
+        # Check if the file exists before sending it
+        if os.path.exists(pdf_path):
+            return send_file(pdf_path, as_attachment=True)
 
-        # If the certificate does not exist, flash a message
-        flash('Certificate not found.', 'danger')
+        # If the file does not exist, flash a more informative message
+        flash(
+            'The certificate file is not available for download. '
+            'Please check the email you received after making the donation transaction.',
+            'warning'
+        )
         return redirect(url_for('certificate_history'))  # Redirect to the certificate history page
 
     except Exception as e:
-        # Log the exception if needed (you can also set up logging)
+        # Log the exception for debugging (optional)
         print(f"An error occurred: {e}")
-        flash('An unexpected error occurred while trying to download the certificate.', 'danger')
+        flash(
+            'An unexpected error occurred while trying to download the certificate. '
+            'Please try again later or contact support if the issue persists.',
+            'danger'
+        )
         return redirect(url_for('certificate_history'))  # Redirect to the certificate history page
 
+@app.route('/donor_dashboard/match_students', methods=['GET'])
+@login_required
+def match_students():
+    if current_user.role != 'donor':
+        return redirect(url_for('home'))  # Redirect if not a donor
+
+    # Fetch the donor's balance
+    donor = Donor.query.filter_by(user_id=current_user.id).first()
+
+    if not donor:
+        flash('Donor account not found.', 'danger')
+        return redirect(url_for('dashboard'))
+
+    # Get recommended students based on the donor's balance
+    recommended_students = get_recommended_students(donor.balance)
+
+    if not recommended_students:
+        flash('There are no students awaiting funding at this time.', 'info')
+
+    # Pass both the students and donor information to the template
+    return render_template('match_students.html', students=recommended_students, donor=donor)
+
+def get_recommended_students(donor_balance):
+    # Query students with application status 'awaiting funding'
+    students = Student.query.join(FinancialAid).filter(
+        FinancialAid.application_status == 'awaiting funding',
+        Student.owing_amount <= donor_balance
+    ).all()
+    
+    return students
+
+from ortools.sat.python import cp_model
+
+@app.route('/allocate_funds/<int:student_id>', methods=['POST'])
+@login_required
+def allocate_funds(student_id):
+    donor = Donor.query.filter_by(user_id=current_user.id).first()
+    student = Student.query.get(student_id)
+
+    if student and donor:
+        # Ensure the owing amount and donor balance are integers
+        owing_amount = int(student.owing_amount)  # Convert to integer
+        donor_balance = int(donor.balance)          # Convert to integer
+
+        # Create the CP model
+        model = cp_model.CpModel()
+
+        # Create variables
+        allocate = model.NewBoolVar(f'allocate_{student.student_code}')
+
+        # Set the constraints
+        model.Add(allocate * owing_amount <= donor_balance)  # Ensure allocation does not exceed donor balance
+
+        # Objective: Maximize the total amount allocated
+        model.Maximize(allocate * owing_amount)
+
+        # Create the solver
+        solver = cp_model.CpSolver()
+        status = solver.Solve(model)
+
+        if status == cp_model.OPTIMAL or status == cp_model.FEASIBLE:
+            # If a feasible solution is found, allocate funds
+            donor.balance -= owing_amount
+            
+            # Create a payment record
+            payment = Payment(payment_amount=owing_amount, donor_code=donor.donor_code)
+            db.session.add(payment)
+            
+            # Update the financial aid record
+            financial_aid = FinancialAid.query.filter_by(student_code=student.student_code).first()
+            
+            if financial_aid:
+                financial_aid.donor_code = donor.donor_code  # Assign donor to the financial aid
+                financial_aid.application_status = 'approved'  # Change status to approved
+            
+            db.session.commit()  # Commit all changes to the database
+            
+            return redirect(url_for('match_students'))
+        else:
+            return "No feasible allocation found.", 400
+    else:
+        # Handle insufficient funds or student not found
+        return "Insufficient funds or student not found", 400
+    
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

@@ -96,20 +96,22 @@
     </div>
 </div>
 
-        <!-- Student Matches -->
-        <div class="col-lg-4 col-md-6 mb-4">
-            <div class="card shadow border-light h-100">
-                <div class="card-body d-flex flex-column text-center">
-                    <h2 class="card-title"><i class="fas fa-users"></i> Student Matches</h2>
-                    <ul class="list-unstyled">
-                        {% for match in donor.matches %}
-                            <li>{{ match.student_name }} - {{ match.program }}</li>
-                        {% endfor %}
-                    </ul>
-                    <a href="#student-matches" class="btn btn-info mt-auto">View Matches</a>
-                </div>
-            </div>
+<!-- Student Matches -->
+<div class="col-lg-4 col-md-6 mb-4">
+    <div class="card shadow border-light h-100">
+        <div class="card-body d-flex flex-column text-center">
+            <h2 class="card-title"><i class="fas fa-users"></i> Student Matches</h2>
+            {% if donor %}
+                <p><strong>Donor Balance:</strong> R{{ donor_balance }}</p> <!-- Display donor balance -->
+
+                <a href="{{ url_for('match_students') }}" class="btn btn-info mt-auto">View Matches</a> <!-- Link to matching page -->
+            {% else %}
+                <p>No donor information available.</p>
+            {% endif %}
         </div>
+    </div>
+</div>
+
 
         <!-- Make a Donation -->
         <div class="col-lg-4 col-md-6 mb-4">
@@ -177,47 +179,8 @@
         </div>
 
     </div>
-
-    <!-- Dashboard Analytics Section -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card shadow border-light">
-                <div class="card-body">
-                    <h2 class="card-title text-center"><i class="fas fa-chart-bar"></i> Dashboard Analytics</h2>
-                    <canvas id="dashboardChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-
-<!-- Include Chart.js for graphs -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-// Handle Chart Rendering using Chart.js
-const ctx = document.getElementById('dashboardChart').getContext('2d');
-const dashboardChart = new Chart(ctx, {
-    type: 'bar', // Bar chart type
-    data: {
-        labels: ['January', 'February', 'March', 'April', 'May'], // Example months
-        datasets: [{
-            label: 'Sample Data', // Data label
-            data: [12, 19, 3, 5, 2], // Sample dataset
-            backgroundColor: ['rgba(54, 162, 235, 0.2)'], // Bar color
-            borderColor: ['rgba(54, 162, 235, 1)'], // Border color
-            borderWidth: 1 // Border width
-        }]
-    },
-    options: {
-        responsive: true, // Ensures chart is responsive
-        scales: {
-            y: {
-                beginAtZero: true // Y-axis starts at zero
-            }
-        }
-    }
-});
-
     function openChat() {
         // You can customize this to open a modal, redirect to a chat service, or open a chat widget.
         alert('Chat support is not available yet. Please contact support@YUI Inc.com.');

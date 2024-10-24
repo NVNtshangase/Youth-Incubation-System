@@ -33,7 +33,9 @@ class Student(db.Model):
     student_highest_grade = db.Column(db.String(20), nullable=True)
     student_financial_status = db.Column(db.String(20), nullable=True)
     disability = db.Column(db.String(10), nullable=True)
+    owing_amount = db.Column(db.Integer, nullable=False) 
     criminal_record = db.Column(db.String(10), nullable=True)
+    
     age = db.Column(db.Integer, nullable=False)
 
     # Foreign Key for Course
@@ -56,6 +58,7 @@ class Donor(db.Model):
     donor_email = db.Column(db.String(50), nullable=False)
     donor_phone_number = db.Column(db.String(20), nullable=True)
     donor_organization = db.Column(db.String(100), nullable=True)
+    balance = db.Column(db.Float, default=0)
     
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # Foreign key to User
 
@@ -128,3 +131,4 @@ class Certificate(db.Model):
     certificate_signature = db.Column(db.String(100), nullable=False)
 
     donor_code = db.Column(db.Integer, db.ForeignKey('donor.donor_code'))
+    
