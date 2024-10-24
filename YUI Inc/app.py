@@ -466,8 +466,8 @@ def allocate_funds(student_id):
 
                             # Send notification email to the student
                 subject = "YUI Inc Funding Approved"
-                content = f"Dear {student.name},<br>Your Financial Aid  application has been approved! Thank you for your patience.<br>Best regards,<br>Your Team"
-                send_email(student.email, subject, content) 
+                content = f"Dear {student.student_name},<br>Your Financial Aid  application has been approved! Thank you for your patience.<br>Best regards,<br>Your Team"
+                send_email(student.student_email, subject, content) 
             
             db.session.commit()  
             

@@ -10,7 +10,7 @@
          style="background-color: {{ 
             earliest_application_details.application.application_status == 'awaiting funding' and '#fff4e1' or 
             earliest_application_details.application.application_status == 'In Progress' and '#e1f0ff' or 
-            earliest_application_details.application.application_status == 'Successful' and '#e1ffe1' or 
+            earliest_application_details.application.application_status == 'approved' and '#e1ffe1' or 
             '#ffe1e1' 
          }};">
         <div class="status-content">
@@ -22,7 +22,7 @@
                 <span class="status-badge 
                 {% if earliest_application_details.application.application_status == 'awaiting funding' %} awaiting funding
                 {% elif earliest_application_details.application.application_status == 'In Progress' %} in-progress
-                {% elif earliest_application_details.application.application_status == 'Successful' %} successful
+                {% elif earliest_application_details.application.application_status == 'approved' %} approved
                 {% else %} rejected
                 {% endif %}">
                 {{ earliest_application_details.application.application_status }}
@@ -130,7 +130,7 @@
     color: white;
 }
 
-.pending {
+.awaiting funding {
     background-color: #ffc107;
 }
 
@@ -138,7 +138,7 @@
     background-color: #17a2b8;
 }
 
-.successful {
+.approved {
     background-color: #28a745;
 }
 
