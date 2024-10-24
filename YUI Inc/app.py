@@ -1,3 +1,5 @@
+import random
+import string
 from flask import Flask, render_template, redirect, send_file, session, url_for, flash, request
 import requests, os
 from models.models import Certificate, Donor, FinancialAid, Payment, Student, User,Course, db
@@ -7,6 +9,9 @@ from blue_prints.application import application_bp
 from blue_prints.certificate import certificate_bp
 from werkzeug.security import check_password_hash ,generate_password_hash
 from dotenv import load_dotenv
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 load_dotenv()
 
 app = Flask(__name__)
@@ -119,7 +124,7 @@ def update_password():
 
         db.session.commit()
         flash('Password updated successfully.', 'success')
-        return redirect(url_for('home'))
+        return redirect(url_for('dashboard'))
 
     return render_template('update_profile.html', student=student)
 
@@ -456,10 +461,15 @@ def allocate_funds(student_id):
             financial_aid = FinancialAid.query.filter_by(student_code=student.student_code).first()
             
             if financial_aid:
-                financial_aid.donor_code = donor.donor_code  # Assign donor to the financial aid
-                financial_aid.application_status = 'approved'  # Change status to approved
+                financial_aid.donor_code = donor.donor_code  
+                financial_aid.application_status = 'approved' 
+
+                            # Send notification email to the student
+                subject = "YUI Inc Funding Approved"
+                content = f"Dear {student.name},<br>Your Financial Aid  application has been approved! Thank you for your patience.<br>Best regards,<br>Your Team"
+                send_email(student.email, subject, content) 
             
-            db.session.commit()  # Commit all changes to the database
+            db.session.commit()  
             
             return redirect(url_for('match_students'))
         else:
@@ -467,7 +477,46 @@ def allocate_funds(student_id):
     else:
         # Handle insufficient funds or student not found
         return "Insufficient funds or student not found", 400
+
+def send_email(to_email, subject, content):
+    message = Mail(
+        from_email=os.getenv('nv_user'), 
+        to_emails=to_email,
+        subject=subject,
+        html_content=content
+    )
     
+    try:
+        sg = SendGridAPIClient(os.getenv('S_K_P'))  
+        response = sg.send(message)
+        print(f"Email sent to {to_email}: {response.status_code}")
+    except Exception as e:
+        print(f"Error sending email: {e}")
+
+@app.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(username=email).first()
+
+        if user:
+            # Generate a new random password
+            new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            user.password = generate_password_hash(new_password)  # Hash the new password
+            db.session.commit()
+
+            # Send email with the new password
+            subject = "Your New Password"
+            content = f"Dear {user.username},<br>Your new password is: {new_password}<br>Please log in and change your password in the profile section."
+            send_email(user.username, subject, content)  # Use the send_email function from earlier
+            
+            flash('A new password has been sent to your email. Please check your inbox.', 'success')
+            return redirect(url_for('login'))  # Redirect to the login page
+        else:
+            flash('Email address not found. Please try again.', 'danger')
+
+    return render_template('forgot_password.html')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
