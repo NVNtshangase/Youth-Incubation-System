@@ -27,7 +27,7 @@ Reseach based project titled **"Advanced Youth Upskilling Incubation System usin
   <img src="https://github.com/user-attachments/assets/c7494bed-d0ec-40cb-9655-6e8d55337207" width="30%" alt="">
   <img src="https://github.com/user-attachments/assets/9cbfd75e-1f7a-4766-a016-a2f5bee3cf40" width="30%" alt="">
   <img src="https://github.com/user-attachments/assets/d600d76e-a41a-4a41-a56b-6d6c687cd63c" width="30%" alt="">
-  <img src="https://github.com/user-attachments/assets/a204618b-6f53-4081-87b6-938675d24289" width="30%" height="150" alt="">
+  <img src="https://github.com/user-attachments/assets/a204618b-6f53-4081-87b6-938675d24289" width="30%" alt="">
   <img src="https://github.com/user-attachments/assets/fa547dc2-db08-4419-9546-8f1d2c47fdb8" width="30%" alt="">
   <img src="https://github.com/user-attachments/assets/6c9eb7a4-b6ec-4568-af30-8fbac8d22ba4" width="30%" alt="">
   <img src="https://github.com/user-attachments/assets/61a5c5f6-e5a0-45ec-8e56-662e46ce218d" width="30%" alt="">
