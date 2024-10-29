@@ -13,7 +13,7 @@ Reseach based project titled **"Advanced Youth Upskilling Incubation System usin
 ## Design Diagrams
 <p align="center">
   <img src="https://github.com/user-attachments/assets/566cb0a7-c298-493f-be8e-82ddcd0a7610" width="45%" height="275" alt="">
-  <img src="https://github.com/user-attachments/assets/e3bc355c-b4ac-4f84-8897-a6123d22b194" width="45%" height="275" alt="">
+  <img src="https://github.com/user-attachments/assets/e3bc355c-b4ac-4f84-8897-a6123d22b194" width="50%" height="275" alt="">
   <img src="https://github.com/user-attachments/assets/d2b2cdc0-1a20-4a07-bd4f-36220a5f11e3" width="60%" height="275" alt="">
 </p>
 
